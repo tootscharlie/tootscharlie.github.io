@@ -141,3 +141,4 @@ mermaid: ## mermaid url https://github.com/knsv/mermaid
 
 skip_render:
   - baidu_verify_ICTvbT6BAW.html
+  - _posts/致富之路.md
