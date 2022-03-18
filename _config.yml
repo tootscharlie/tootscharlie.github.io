@@ -3,18 +3,18 @@ description: 陈志昊的个人博客
 keywords: 陈志昊
 url: https://chenzhihao.cc
 # 自动生成sitemap
-sitemap: 
+sitemap:
   path: sitemap.xml
 baidusitemap:
   path: baidusitemap.xml
 
 # 站点图标和APP图标
-favicon: 
+favicon:
   icon: /images/icon.jpg
   touch_icon: /images/icon.jpg
 
 # RSS文件
-rss: 
+rss:
 
 # 自定义样式文件
 custom_style: /custom/style.css
@@ -22,30 +22,29 @@ custom_style: /custom/style.css
 # 自定义脚本文件
 # loc: 脚本文件位置
 # load: 加载方式
-custom_script: 
-  - 
-    src: /custom/script.js
+custom_script:
+  - src: /custom/script.js
     load: async
 
 # 是否渲染 文章目录
-toc: true
+toc: false
 
 # 是否支持 数学公式
 mathjax: true
 
 # 是否开启 音乐组件
-player: true
+player: false
 
 # 是否开启 分享功能: https://github.com/overtrue/share.js
 social_share:
   enable: true
   sites: qzone, qq, weibo, wechat, douban, google, facebook, twitter
-  disabled: 
+  disabled:
 
 # 是否开启 打赏功能
-reward: 
+reward:
   enable: false
-  meta: 知识 & 情怀 | 二者兼得 
+  meta: 知识 & 情怀 | 二者兼得
   button_meta: 投食
   # qrcodes:
   #   -
@@ -53,71 +52,58 @@ reward:
   #     meta: "微信扫一扫, 向我投食"
 
 # 是否开启版权声明
-copyright: 
+copyright:
   enable: true
   author: 陈志昊
   license: '本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！'
 
 # 页脚信息 
-footer: 
+footer:
   start: "2014-10-01"
-  more: 
+  more:
 
 # 开启 评论 & 统计 插件 : https://godbmw.com/passages/2018-11-15-theme-bmw-docs-zh/
 leancloud:
   appid: UdjtjgaXj3uYE0OUhftzG7R6-gzGzoHsz # 填写您的appid
   appkey: 3fnNYykrhSbmF72s8P26RcfE # 填写您的appkey
-  comment: true # 是否开启评论系统
-  timer: true # 是否开启文章统计
+#  comment: true # 是否开启评论系统
+#  timer: true # 是否开启文章统计
 
 # 导航栏头部名称
 nav_name: Chen's Blog
 # 导航栏选项
 # blank: 是否在新页面打开，默认 false
 # children：开启二级导航栏
-nav: 
-  - 
-    name: 主页
+nav:
+  - name: 主页
     path: /
-  -
-    name: 系列
-    children:
-      -
-        name: Spring学习总结
-        path: /2019/12/03/Spring学习过程总结/
-        blank: true
-  -
-    name: 归档
+  #  -
+  #    name: 系列
+  #    children:
+  #      -
+  #        name: Spring学习总结
+  #        path: /2019/12/03/Spring学习过程总结/
+  #        blank: true
+  - name: 归档
     path: /archives/
-  -
-    name: 分类
+  - name: 分类
     path: /categories/
-  -
-    name: 标签
+  - name: 标签
     path: /tags/
   # -
   #   name: 友链
   #   path: /friends/
-  - 
-    name: 关于
+  - name: 关于
     path: /about/
-  # -
-  #   name: 抓到我
-  #   children:
-  #     -
-  #       name: Github
-  #       path: "https://github.com/24tt"
-  #       blank: true
 
 # 友链详细信息
-friends:
-  -
-    nickname: GodBMW
-    avatar: /images/touch-icon.png
-    site: https://godbmw.com
-    meta: 啦啦啦♪(^∇^*)
-    show: false
- 
+#friends:
+#  - nickname: GodBMW
+#    avatar: /images/touch-icon.png
+#    site: https://godbmw.com
+#    meta: 啦啦啦♪(^∇^*)
+#    show: false
+
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
@@ -127,7 +113,6 @@ theme: bmw
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  # repo: git@github.com:24tt/24tt.github.io.git
   repo: git@gitee.com:hzszl/hzszl.git
   branch: master
 
@@ -137,7 +122,7 @@ mermaid: ## mermaid url https://github.com/knsv/mermaid
   version: "8.4.3" # default v7.1.2
   theme: "forest"
   options:  # find more api options from https://github.com/knsv/mermaid/blob/master/src/mermaidAPI.js
-    #startOnload: true  // default true
+  #startOnload: true  // default true
 
 skip_render:
   - baidu_verify_ICTvbT6BAW.html

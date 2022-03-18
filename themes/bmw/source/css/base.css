@@ -1038,4 +1038,8 @@ a:hover {
   opacity: 0;
   visibility: hidden; }
 
+.mermaid svg{
+  height: auto !important;
+}
+
 /*# sourceMappingURL=base.css.map */
