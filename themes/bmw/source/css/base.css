@@ -1028,7 +1028,7 @@ a:hover {
   text-decoration: none; }
 
 .container {
-  max-width: 750px;
+  max-width: 800px;
   min-height: 80vh;
   margin: 0 auto; }
 
@@ -1073,5 +1073,7 @@ a:hover {
 }
 
 .article-content{
-  margin: 2rem 0 0 0 !important;
+  margin: 2rem 0 2em 0 !important;
+  padding-bottom: 2em;
+  border-bottom: 1px solid #eee;
 }
