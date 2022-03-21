@@ -17,8 +17,6 @@ social_share:
   sites: qzone, qq, weibo, wechat, douban, google, facebook, twitter
   disabled:
 
-
-
 # 开启 评论 & 统计 插件 : https://godbmw.com/passages/2018-11-15-theme-bmw-docs-zh/
 leancloud:
   appid: UdjtjgaXj3uYE0OUhftzG7R6-gzGzoHsz # 填写您的appid
@@ -26,12 +24,10 @@ leancloud:
 #  comment: true # 是否开启评论系统
 #  timer: true # 是否开启文章统计
 
-
 # 页脚信息
 footer:
   start: "2014-10-01"
   more:
-
 
 # mermaid chart
 mermaid: ## mermaid url https://github.com/knsv/mermaid
@@ -41,32 +37,20 @@ mermaid: ## mermaid url https://github.com/knsv/mermaid
   options:  # find more api options from https://github.com/knsv/mermaid/blob/master/src/mermaidAPI.js
   #startOnload: true  // default true
 
-
 # 导航栏选项
 # blank: 是否在新页面打开，默认 false
 # children：开启二级导航栏
 nav:
   - name: 主页
     path: /
-  #  -
-  #    name: 系列
-  #    children:
-  #      -
-  #        name: Spring学习总结
-  #        path: /2019/12/03/Spring学习过程总结/
-  #        blank: true
   - name: 归档
     path: /archives/
   - name: 分类
     path: /categories/
   - name: 标签
     path: /tags/
-  # -
-  #   name: 友链
-  #   path: /friends/
   - name: 关于
     path: /about/
-
 
 # 是否开启 打赏功能
 reward:

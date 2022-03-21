@@ -5,9 +5,9 @@
 # Site
 title: "Chen's Blog"
 subtitle: '陈志昊的个人博客'
-description: '陈志昊的个人博客'
-keywords: '陈志昊'
-author: Chenzhihao
+description: '陈志昊的个人博客，分享生活、学习和工作中的点点滴滴'
+keywords: '陈志昊,Java,chenzhihao,耗子睡着了'
+author: '陈志昊'
 language: cn
 timezone: ''
 
@@ -29,10 +29,17 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
+  - baidu_verify_ICTvbT6BAW.html
+  - CNAME
+  - robots.txt
+  - pdf/**
+  - file/**
+  - csp/**
 
 # Writing
-new_post_name: :title.md # File name of new posts
+new_post_name: :year_:month_:day_:title.md # File name of new posts
 default_layout: post
+auto_spacing: true # 中英文之间加空格
 titlecase: false # Transform title into titlecase
 external_link:
   enable: true # Open external links in new tab
@@ -66,7 +73,7 @@ index_generator:
   order_by: -date
 
 # Category & Tag
-default_category: uncategorized
+default_category: 未分类
 category_map:
 tag_map:
 
@@ -97,9 +104,11 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: bmw
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
+  type: git
+  repo: git@gitee.com:hzszl/hzszl.git
+  branch: master
