@@ -9,6 +9,7 @@
     "hexo": "^6.0.0",
     "hexo-browsersync": "^0.3.0",
     "hexo-deployer-git": "^1.0.0",
+    "hexo-deployer-sftp": "^0.4.1",
     "hexo-filter-mermaid-diagrams": "^1.0.5",
     "hexo-generator-archive": "^1.0.0",
     "hexo-generator-baidu-sitemap": "^0.1.6",
