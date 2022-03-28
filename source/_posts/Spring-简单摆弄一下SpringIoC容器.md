@@ -5,13 +5,8 @@ categories: 技术
 tags: Spring
 ---
 
-<!--more-->
-
-# Spring IoC容器
-
 Spring框架本身实现了一套完整的IoC容器模型和依赖注入过程，在Spring框架的源码中`org.springframework.beans`和`org.springframework.context`包是Spring框架的基础，`BeanFactory`接口则是IoC的核心，它被描述为抽象的IoC容器，可以管理所以类型的Java对象，它定义了如何管理和配置IoC容器中的对象（例如：根据名称获取对象等）。我们常用的`ApplicationContext`是其子类，他完全实现了`BeanFactory`的所有功能，并且他还增加更多企业级特定的功能，例如：事件发布/监听机制、国际化等，在WEB应用程序生态中更是引入了`WebApplicationContext`提供全面的WEB应用程序开发支持。
-
-（这里挖个坑，我将在后续不断学习和充实这部分知识，系统的总结Spring IoC框架底层实现及启动过程）
+<!--more-->
 
 # Bean是个啥？
 

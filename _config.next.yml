@@ -1,0 +1,44 @@
+# Remove unnecessary files after hexo generate.
+minify: true
+
+# 动画
+motion:
+  enable: true
+
+# scheme: Muse
+# scheme: Mist
+scheme: Pisces
+# scheme: Gemini
+
+# custom_logo: /icon.jpg
+
+favicon:
+  small: /icon.jpg
+  medium: /icon.jpg
+  apple_touch_icon: /icon.jpg
+  safari_pinned_tab: /icon.jpg
+
+creative_commons:
+  # Available values: by | by-nc | by-nc-nd | by-nc-sa | by-nd | by-sa | cc-zero
+  license: by-nc-sa
+  # Available values: big | small
+  size: small
+  sidebar: true
+  post: true
+  language: deed.zh
+
+# 菜单配置
+menu:
+  home: / || fa fa-home
+
+# Easily enable fast Ajax navigation on your website.
+# For more information: https://github.com/next-theme/pjax
+pjax: true
+
+# Mermaid tag
+mermaid:
+  enable: true
+  # Available themes: default | dark | forest | neutral
+  theme: 
+    light: forest
+    dark: forest
