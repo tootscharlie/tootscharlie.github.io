@@ -3,7 +3,7 @@ minify: true
 
 # 动画
 motion:
-  enable: true
+  enable: false
 
 # scheme: Muse
 # scheme: Mist
