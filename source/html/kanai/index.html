@@ -24,15 +24,8 @@
         </tr>
     </table>
 
-    <table>
-        <tr>
-            <td>标题</td>
-            <td>发帖日期</td>
-            <td>评论数</td>
-        </tr>
-        <span id="searchResult">
+    <table id="searchResult">
 
-        </span>
     </table>
 
 
@@ -72,6 +65,8 @@
                         alert("未搜到结果");
                         return;
                     }
+                    dataTable.append("<tr><td>标题</td><td>发帖日期</td><td>评论数</td></tr>")
+
                     $.each(result.data.data, function (i, topic) {
                         dataTable.append(
                             "<tr>" +
@@ -81,6 +76,7 @@
                             "</tr>"
                         )
                     })
+                    dataTable.append("<tr><td><button onclick=\"search(" + (data.data.pageNo + 1) + ")\">下一页(" + (data.data.pageNo + 1) + ")</button></td><td></td><td></td></tr>")
                 }
             });
         }
