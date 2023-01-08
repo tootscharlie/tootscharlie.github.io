@@ -35,6 +35,7 @@ skip_render:
   - pdf/**
   - file/**
   - csp/**
+  - html/**
 
 # Writing
 new_post_name: :year_:month_:day_:title.md # File name of new posts

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <title>卡奈魔盒</title>
+</head>
+
+<body>
+
+    <table>
+        <tr>
+            <td>小组编号</td>
+            <td>关键字</td>
+            <td>操作</td>
+        </tr>
+        <tr>
+            <td><input type="text" name="" id="groupIDInp"></td>
+            <td><input type="text" name="" id="keywordsInp"></td>
+            <td><button onclick="search(1)">搜索</button></td>
+        </tr>
+    </table>
+
+    <table>
+
+    </table>
+
+
+    <script>
+        function search(pageNo) {
+            var groupID = $("#groupIDInp").val();
+            var keywords = $("#keywordsInp").val();
+            if (groupID.length == 0) {
+                alert("请填写小组ID");
+                return;
+            }
+            if (keywords.length == 0) {
+                alert("请填写关键字");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "http://chenzhihao.cc/kanai/douban/searchGroupTopic",
+                data: JSON.stringify(
+                    {
+                        "groupID": groupID,
+                        "keyword": keywords,
+                        "pageNo": pageNo
+                    }
+                ),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    console.log(result)
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
