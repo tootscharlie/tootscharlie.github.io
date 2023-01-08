@@ -25,7 +25,14 @@
     </table>
 
     <table>
+        <tr>
+            <td>标题</td>
+            <td>发帖日期</td>
+            <td>评论数</td>
+        </tr>
+        <span id="searchResult">
 
+        </span>
     </table>
 
 
@@ -55,7 +62,25 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (result) {
-                    console.log(result)
+                    if (result.code != 0) {
+                        alert(result.msg)
+                        return
+                    }
+                    var dataTable = $("#searchResult");
+                    dataTable.html("")
+                    if (result.data == null || result.data.data == null) {
+                        alert("未搜到结果");
+                        return;
+                    }
+                    $.each(result.data.data, function (i, topic) {
+                        dataTable.append(
+                            "<tr>" +
+                            "<td><a href=\"" + topic.url + "\" target=\"_blank\">" + topic.title + "</a></td>" +
+                            "<td>" + topic.createTime + "</td>" +
+                            "<td>" + topic.replyCount + "</td>" +
+                            "</tr>"
+                        )
+                    })
                 }
             });
         }

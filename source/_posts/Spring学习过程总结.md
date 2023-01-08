@@ -28,8 +28,8 @@ tags: Spring
 
 ## 目录
 
-1. {% post_link Spring:白话一下IoC %}
-2. {% post_link Spring-简单摆弄一下SpringIoC容器 %}
-3. {% post_link Spring:Bean的实例化配置及依赖注入 %}
-4. {% post_link Spring-浅谈依赖注入 %}
-5.  {% post_link Spring-属性注入那点事儿 %}
+1. {% post_path /Users/didi/Documents/development/blog/source/_posts/Spring:白话一下IoC %}
+2. {% post_path /Users/didi/Documents/development/blog/source/_posts/Spring-简单摆弄一下SpringIoC容器 %}
+3. {% post_path /Users/didi/Documents/development/blog/source/_posts/Spring:Bean的实例化配置及依赖注入 %}
+4. {% post_path /Users/didi/Documents/development/blog/source/_posts/Spring-浅谈依赖注入 %}
+5.  {% post_path /Users/didi/Documents/development/blog/source/_posts/Spring-属性注入那点事儿 %}
