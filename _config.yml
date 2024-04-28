@@ -36,6 +36,7 @@ skip_render:
   - file/**
   - csp/**
   - html/**
+  - Makefile
 
 # Writing
 new_post_name: :year_:month_:day_:title.md # File name of new posts
