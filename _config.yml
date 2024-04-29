@@ -4,7 +4,7 @@
 
 # Site
 title: "Chen's Blog"
-subtitle: '陈志昊的个人博客'
+subtitle: '守得云开见月明'
 description: 'Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!'
 keywords: '陈志昊,Java,chenzhihao,耗子睡着了'
 author: 'Chen'
@@ -32,11 +32,11 @@ skip_render:
   - baidu_verify_ICTvbT6BAW.html
   - CNAME
   - robots.txt
-  - pdf/**
   - file/**
   - csp/**
   - html/**
   - Makefile
+  - lib/**/*
 
 # Writing
 new_post_name: :year_:month_:day_:title.md # File name of new posts
