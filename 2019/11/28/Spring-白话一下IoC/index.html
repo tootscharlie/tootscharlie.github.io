@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"chenzhihao.cc","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"width_expanded":320,"width_dual_column":240},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Spring是一套完整的Java企业级开发框架，其内部完整的实现了一套IoC容器体系和面向切面编程（AOP）特性，可以基于SpringIoC特性完成不同框架之间的完美整合，加之轻量级的特点和完善的社区支持，目前仍是使用最多的Java开发框架。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring:白话一下IoC">
+<meta property="og:url" content="https://chenzhihao.cc/2019/11/28/Spring-%E7%99%BD%E8%AF%9D%E4%B8%80%E4%B8%8BIoC/index.html">
+<meta property="og:site_name" content="Chen&#39;s Blog">
+<meta property="og:description" content="Spring是一套完整的Java企业级开发框架，其内部完整的实现了一套IoC容器体系和面向切面编程（AOP）特性，可以基于SpringIoC特性完成不同框架之间的完美整合，加之轻量级的特点和完善的社区支持，目前仍是使用最多的Java开发框架。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-11-28T05:10:17.000Z">
+<meta property="article:modified_time" content="2024-04-28T08:11:41.499Z">
+<meta property="article:author" content="Chen">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://chenzhihao.cc/2019/11/28/Spring-%E7%99%BD%E8%AF%9D%E4%B8%80%E4%B8%8BIoC/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://chenzhihao.cc/2019/11/28/Spring-%E7%99%BD%E8%AF%9D%E4%B8%80%E4%B8%8BIoC/","path":"2019/11/28/Spring-白话一下IoC/","title":"Spring:白话一下IoC"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring:白话一下IoC | Chen's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chen's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IoC%E6%98%AF%E5%95%A5%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">IoC是啥？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AF%94%E5%88%92%E6%AF%94%E5%88%92"><span class="nav-number">2.</span> <span class="nav-text">比划比划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F%E5%8F%8D%E8%BD%AC%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">控制了什么？反转了什么？</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chen"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Chen</p>
+  <div class="site-description" itemprop="description">Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/haozishuizhaole" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;haozishuizhaole" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chenzhihao.cc/2019/11/28/Spring-%E7%99%BD%E8%AF%9D%E4%B8%80%E4%B8%8BIoC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Chen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Blog">
+      <meta itemprop="description" content="Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring:白话一下IoC | Chen's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring:白话一下IoC
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-11-28 13:10:17" itemprop="dateCreated datePublished" datetime="2019-11-28T13:10:17+08:00">2019-11-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-28 16:11:41" itemprop="dateModified" datetime="2024-04-28T16:11:41+08:00">2024-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="Spring:白话一下IoC" href="/2019/11/28/Spring-%E7%99%BD%E8%AF%9D%E4%B8%80%E4%B8%8BIoC/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::8e79263e31c2a8495edca371c97cb72d" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Spring是一套完整的Java企业级开发框架，其内部完整的实现了一套IoC容器体系和面向切面编程（AOP）特性，可以基于SpringIoC特性完成不同框架之间的完美整合，加之轻量级的特点和完善的社区支持，目前仍是使用最多的Java开发框架。</p>
+<span id="more"></span>
+
+<h2 id="IoC是啥？"><a href="#IoC是啥？" class="headerlink" title="IoC是啥？"></a>IoC是啥？</h2><p>IoC是控制反转（Inversion of Control）的缩写，也称为依赖注入（DI，即Dependency Injection的缩写），它是面向对象编程领域中的一种设计原则。</p>
+<h2 id="比划比划"><a href="#比划比划" class="headerlink" title="比划比划"></a>比划比划</h2><p>从技术实现角度上来说，客户端需要一个<code>Class A</code>的对象，而<code>Class A</code>依赖于另一个<code>Class B</code>，常规操作需要在客户端使用<code>new</code>操作符手动创建<code>Class A</code>和<code>Class B</code>的对象，完后将<code>Class B</code>的对象组装进<code>Class A</code>的对象中。示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Client</span>&#123;</span><br><span class="line">    <span class="type">B</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">B</span>();</span><br><span class="line">    <span class="type">A</span> <span class="variable">a</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">A</span>(b);</span><br><span class="line">    <span class="comment">// do something~</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> B b;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">A</span><span class="params">(B b)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.b = b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>客户端手动创建了一大堆对象，一股脑全塞堆内存里了，资源释放谁来做？对于无状态对象还要<code>new</code>岂不是很浪费资源？哇，是真的烦！</p>
+<p>而使用IoC改写后，则只需提供一个<code>IoC容器</code>（Context），将<code>Class A</code>需要的外部资源（例如：<code>Class B</code>）通过配置文件等方式告诉该容器，则在容器初始化的时候就会将将<code>Class A</code>需要的所有外部资源实例化完毕并注入进<code>Class A</code>实例中，客户端需要什么就直接从容器中获得即可。流程大致如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">ClassA--&gt;|添加配置|Context;</span><br><span class="line">ClassB--&gt;|添加配置|Context;</span><br><span class="line">Context--&gt;|初始化,实例化,组装|Context;</span><br><span class="line">Context--&gt;|客户端获取Class A|Client;</span><br></pre></td></tr></table></figure>
+
+<p>这样就感觉爽了许多，IoC容器<code>爸爸</code>启动时自己去搞定对象实例化和拼装，需要啥管他要啥，从此过上了<code>衣来伸手饭来张口</code>的生活，爽歪歪~</p>
+<h2 id="控制了什么？反转了什么？"><a href="#控制了什么？反转了什么？" class="headerlink" title="控制了什么？反转了什么？"></a>控制了什么？反转了什么？</h2><p>从客户端的角度来说，未使用IoC容器之前，对象如何实例化？需要什么样的外部资源？如何组装？这些问题统统都由客户端本身进行控制，换句话说老子一切都干了。但是客户端在这个过程中耦合了太多本身不需要的外部资源，因为对于客户端来说，他只需要ClassA，而ClassA所需的外部资源对客户端来说是未知的，也是客户端无需关心的。而使用了IoC容器之后，客户端只需告诉IoC容器<code>我需要什么</code>，IoC容器就会查找出相应的对象提供给客户端。当然，在IoC容器查找对象的过程中可能包含许多很复杂的工作（例如：配置查找、实例化、组装依赖等），这里暂时不一一阐述。（挖个坑~）</p>
+<p>客户端将创建实例对象的过程交由IoC容器来做，实例对象所需的外部资源也交由IoC容器负责实例化和注入，而客户端只依赖IoC容器，需要啥就要啥，因此整个过程从根本上来讲是反向的，即IoC容器<code>控制</code>了实例对象的创建过程，<code>反转</code>了实例对象对于其所依赖资源的获取过程，所以称这个过程为<code>控制反转</code>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Chen
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://chenzhihao.cc/2019/11/28/Spring-%E7%99%BD%E8%AF%9D%E4%B8%80%E4%B8%8BIoC/" title="Spring:白话一下IoC">https://chenzhihao.cc/2019/11/28/Spring-白话一下IoC/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/09/27/JDK8%E4%B9%8BLambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3/" rel="prev" title="JDK8之Lambda表达式与函数式接口简述">
+                  <i class="fa fa-angle-left"></i> JDK8之Lambda表达式与函数式接口简述
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/11/28/Spring-%E7%AE%80%E5%8D%95%E6%91%86%E5%BC%84%E4%B8%80%E4%B8%8BSpringIoC%E5%AE%B9%E5%99%A8/" rel="next" title="Spring:简单摆弄一下SpringIoC容器">
+                  Spring:简单摆弄一下SpringIoC容器 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="SOHUCS" sid="8e79263e31c2a8495edca371c97cb72d"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"forest","dark":"forest"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.min.js","integrity":"sha256-TtLOdUA8mstPoO6sGvHIGx2ceXrrX4KgIItO06XOn8A="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyvYJIVq9","appkey":"75e4ade7804f4dc17e257a70697930d2","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+
+</body>
+</html>

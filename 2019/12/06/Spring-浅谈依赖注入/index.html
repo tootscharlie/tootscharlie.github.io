@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"chenzhihao.cc","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"width_expanded":320,"width_dual_column":240},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Spring框架的核心技术是IoC，将对象的创建时机和创建过程交由IoC容器来管理，并且在容器实例化对象之后自动注入该对象所需的外部依赖，由于整个过程从根本上来说是反向的，所以称该过程为控制反转，也叫依赖注入（DI）。我在和Spring:简单摆弄一下SpringIoC容器两篇文章中简单描述了IoC是什么和Spring的IoC相关使用方式，本篇简单谈一下IoC的另一层意思——依赖注入（DI）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-浅谈依赖注入">
+<meta property="og:url" content="https://chenzhihao.cc/2019/12/06/Spring-%E6%B5%85%E8%B0%88%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:site_name" content="Chen&#39;s Blog">
+<meta property="og:description" content="Spring框架的核心技术是IoC，将对象的创建时机和创建过程交由IoC容器来管理，并且在容器实例化对象之后自动注入该对象所需的外部依赖，由于整个过程从根本上来说是反向的，所以称该过程为控制反转，也叫依赖注入（DI）。我在和Spring:简单摆弄一下SpringIoC容器两篇文章中简单描述了IoC是什么和Spring的IoC相关使用方式，本篇简单谈一下IoC的另一层意思——依赖注入（DI）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-06T07:22:19.000Z">
+<meta property="article:modified_time" content="2024-04-28T08:11:41.498Z">
+<meta property="article:author" content="Chen">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://chenzhihao.cc/2019/12/06/Spring-%E6%B5%85%E8%B0%88%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://chenzhihao.cc/2019/12/06/Spring-%E6%B5%85%E8%B0%88%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/","path":"2019/12/06/Spring-浅谈依赖注入/","title":"Spring-浅谈依赖注入"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring-浅谈依赖注入 | Chen's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chen's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">依赖是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">依赖注入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5"><span class="nav-number">2.1.</span> <span class="nav-text">基于构造函数的依赖注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8ESetter%E6%96%B9%E6%B3%95%E7%9A%84%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5"><span class="nav-number">2.2.</span> <span class="nav-text">基于Setter方法的依赖注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%B3%A8%E5%85%A5-vs-Setter%E6%B3%A8%E5%85%A5"><span class="nav-number">2.3.</span> <span class="nav-text">构造注入 vs Setter注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%E9%97%AE%E9%A2%98"><span class="nav-number">2.4.</span> <span class="nav-text">循环依赖问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chen"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Chen</p>
+  <div class="site-description" itemprop="description">Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/haozishuizhaole" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;haozishuizhaole" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chenzhihao.cc/2019/12/06/Spring-%E6%B5%85%E8%B0%88%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Chen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Blog">
+      <meta itemprop="description" content="Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring-浅谈依赖注入 | Chen's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring-浅谈依赖注入
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-06 15:22:19" itemprop="dateCreated datePublished" datetime="2019-12-06T15:22:19+08:00">2019-12-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-28 16:11:41" itemprop="dateModified" datetime="2024-04-28T16:11:41+08:00">2024-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="Spring-浅谈依赖注入" href="/2019/12/06/Spring-%E6%B5%85%E8%B0%88%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::d327a6e94fd24d4d18cc28a9c7a85b8c" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Spring框架的核心技术是IoC，将对象的创建时机和创建过程交由IoC容器来管理，并且在容器实例化对象之后自动注入该对象所需的外部依赖，由于整个过程从根本上来说是反向的，所以称该过程为<code>控制反转</code>，也叫<code>依赖注入（DI）</code>。我在和<a href="/2019/11/28/Spring-%E7%AE%80%E5%8D%95%E6%91%86%E5%BC%84%E4%B8%80%E4%B8%8BSpringIoC%E5%AE%B9%E5%99%A8/" title="Spring:简单摆弄一下SpringIoC容器">Spring:简单摆弄一下SpringIoC容器</a>两篇文章中简单描述了IoC是什么和Spring的IoC相关使用方式，本篇简单谈一下IoC的另一层意思——依赖注入（DI）</p>
+<span id="more"></span>
+
+<h2 id="依赖是什么"><a href="#依赖是什么" class="headerlink" title="依赖是什么"></a>依赖是什么</h2><p>说到<code>依赖</code>，可能会联想到<code>人对金钱的依赖</code>、<code>小孩子对父母的依赖</code>、<code>鱼儿对水的依赖</code>等，在这些依赖关系当中，有<code>强依赖</code>也有<code>弱依赖</code>，只要<code>事物A</code>在doSomething的时候需要另一个<code>事物B</code>参与其中，就称<code>事物A事物B</code>，也可以称<code>事物B是事物A的依赖项</code>。在软件系统中，<code>依赖性</code>体现的更为明显，因为任何一个系统都是由若干个系统模块组成，而每一个模块又由若干个类或函数组成。类与类之间会存在<code>关联</code>、<code>继承</code>和<code>实现</code>关系，而模块与模块之间也彼此耦合进行数据通信或行为交互。</p>
+<p>在面向对象的软件系统中，<code>OrderService</code>（订单类）需要调用<code>ProductService</code>（产品类）获取产品价格信息。通常情况，我们会在<code>OrderService</code>中实例化<code>ProductService</code>的对象，然后调用<code>ProductService</code>对象的方法获取数据。样例代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderService</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> Long <span class="title function_">getProcuctPrice</span><span class="params">(String productId)</span>&#123;</span><br><span class="line">        <span class="type">ProductService</span> <span class="variable">productService</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ProductService</span>();</span><br><span class="line">        <span class="keyword">return</span> productService.getPrictByProductId(productId);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProductService</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> Long <span class="title function_">getPrictByProductId</span><span class="params">(String productId)</span>&#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面代码虽然可以实现功能，但是违背了<code>依赖倒置原则</code>和<code>开闭原则</code>。前者比较好判断，因为在上述代码<code>getProcuctPrice</code>方法中使用<code>new</code>操作符创建了<code>ProductService</code>实例的对象，在<code>依赖倒置原则</code>设计原则的定义中明确指出<code>依赖于抽象，而不要依赖具体实现</code>。而后者<code>开闭原则</code>指的是<code>对扩展开放，对修改关闭</code>，即便采用接口来定义依赖的类型，如果有一天对于<code>ProductService</code>的依赖有变动，该方法仍然需要改动。那么面对上述这种情况，难道就无解了么？</p>
+<h2 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h2><p><code>依赖注入</code>（Dependency Injection，简称DI）的思想，是将对象的实例化时机和实例化过程交由<code>容器</code>管理，并且对象所需的依赖，在<code>容器</code>实例化对象后会自动注入给对象。<code>依赖注入</code>只需引入一个所谓的<code>容器</code>，即可以降低代码耦合，提升代码的复用率，代码中几乎不用出现一行<code>new</code>对象的代码，而是去指定<code>我需要什么</code>，容器就会在启动时自动为你注入。而且，注入什么？什么之后注入？以什么方式注入？这些都是可配置的。是不是感觉爽了很多！</p>
+<p>Spring框架已经为我们提供了<code>IoC容器</code>，并且为我们提供了<code>基于构造函数的依赖注入</code>和<code>基于属性Setter方法的起来注入</code>两种依赖注入方式，下面分别聊下这两种依赖注入方式各自的优势和不足。</p>
+<h3 id="基于构造函数的依赖注入"><a href="#基于构造函数的依赖注入" class="headerlink" title="基于构造函数的依赖注入"></a>基于构造函数的依赖注入</h3><p><code>基于构造函数的依赖注入</code>又称<code>构造注入</code>，若配置<code>ClassA</code>以构造注入的方式配置<code>ClassB</code>为其依赖项，则<code>容器</code>会在为<code>ClassA</code>注入依赖项之前，首先实例化<code>ClassB</code>对象，然后以<code>ClassB</code>对象为参数调用<code>ClassA</code>的某个合适的构造函数实例化<code>ClassA</code>对象，即以<code>ClassB</code>对象作为<code>ClassA</code>构造函数参数实例化<code>ClassA</code>对象。Java代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClassA</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ClassB b;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ClassA</span><span class="params">(ClassB b)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.b = b;</span><br><span class="line">        <span class="built_in">this</span>.name = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ClassA</span><span class="params">(ClassB b, String name)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.b = b;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClassB</span>&#123;</span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>容器在使用构造注入，为对象注入外部依赖时，是根据构造函数的参数类型进行自动匹配的，这也不难理解，在Java中区分方法的方式为<code>方法名称、方法参数列表的个数、类型和顺序不同</code>。<br>在Spring配置元数据中，在<code>&lt;bean&gt;</code>元素内部使用<code>&lt;constructor-arg&gt;</code>标签指定该Bean的构造函数参数，例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">beans</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;classA&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.ClassA&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">ref</span>=<span class="string">&quot;classB&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">value</span>=<span class="string">&quot;理想&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;classB&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.ClassB&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>ref</code> 指定依赖Bean实例的名称，该Bean实例可以当前容器定义，也可以是父容器或其祖先容器中的某个Bean。</li>
+<li><code>value</code> 提供字面值，如果参数对应的类型为<code>基本数据类型</code>或<code>基本数据类型的包装类型</code>，Spring会自动注入</li>
+</ul>
+<p>按以上Java代码和配置，容器会自动识别并调用<code>ClassA</code>中签名为<code>public ClassA(ClassB b, String name)</code>的构造函数，<code>&lt;constructor-arg&gt;</code>标签还提供了更多参数来更准确的完成参数配置</p>
+<ul>
+<li><code>type</code> 指定参数类型，值为全限定类型名称，按类型匹配。eg：<code>&lt;constructor-arg type=&quot;java.lang.String&quot; value=&quot;chenzhihao&quot;&gt;</code></li>
+<li><code>name</code> 指定参数名称。eg: <code>&lt;constructor-arg name=&quot;age&quot; value=&quot;25&quot;&gt;</code></li>
+<li><code>index</code> 指定参数位置，从0开始。eg: <code>&lt;constructor-arg index=&quot;0&quot; value=&quot;25&quot;&gt;</code></li>
+</ul>
+<h3 id="基于Setter方法的依赖注入"><a href="#基于Setter方法的依赖注入" class="headerlink" title="基于Setter方法的依赖注入"></a>基于Setter方法的依赖注入</h3><p><code>基于Setter的构造注入</code>简称<code>setter注入</code>，是Bean对象在通过<code>基于构造函数构造函数</code>或<code>基于静态/实例工厂</code>实例化后，以依赖项对象作为参数，调用属性的Setter方法，将依赖项注入进Bean对象的过程。代码如下<br>Java代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClassA</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> ClassB b;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setB</span><span class="params">(ClassB b)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.b = b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClassB</span>&#123;</span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Spring配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">beans</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;classA&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.ClassA&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span> <span class="attr">value</span>=<span class="string">&quot;理想&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;b&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;classB&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;classB&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.ClassB&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通过为<code>&lt;bean&gt;</code>提供<code>&lt;property&gt;</code>标签，指定参数。IoC容器在执行依赖项注入时，会通过属性名识别Setter方法名。<code>ref</code>和<code>value</code>参数同<code>constructor-arg</code>标签。</p>
+<h3 id="构造注入-vs-Setter注入"><a href="#构造注入-vs-Setter注入" class="headerlink" title="构造注入 vs Setter注入"></a>构造注入 vs Setter注入</h3><table>
+<thead>
+<tr>
+<th>#</th>
+<th>构造注入</th>
+<th>Setter注入</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>推荐性</td>
+<td>官方推荐</td>
+<td>官方不推荐</td>
+</tr>
+<tr>
+<td>注入时机</td>
+<td>Bean实例化之前</td>
+<td>Bean实例化之后</td>
+</tr>
+<tr>
+<td>属性完整性</td>
+<td>完整</td>
+<td>不完整</td>
+</tr>
+<tr>
+<td>配置方式</td>
+<td><code>&lt;constructor-arg&gt;</code></td>
+<td><code>&lt;property&gt;</code></td>
+</tr>
+</tbody></table>
+<p>Spring框架做的足够优雅，以至于可以让<code>构造注入</code>和<code>Setter注入</code>混用。官方推荐将构造注入用于Bean的强依赖项注入，将Setter注入用作Bean的可选依赖项注入，虽然Setter注入是在Bean实例化之后进行，但是也可以使用<code>@Required</code>注解标注某个属性为<code>必填项</code>。但是尽管如此，Spring官方团队还是建议开发者使用<code>构造注入</code>，因为它可以使开发者将应用程序的组件定义为<code>不可变对象</code>，并且确保Bean所需的所有外部依赖均不为null，此外，Bean的依赖项在注入Bean对象之前，总是会被IoC容器预先实例化，这使得Bean被返回给客户端的时候总是以<code>完全初始化的方式返回</code>。如果某些情况下，Bean的依赖项很多，此时选用<code>构造注入</code>，将会给构造函数添加许多局部变量，导致构造函数参数列表爆炸，但这种情况也表示当前这个类承担了太多的责任，应当视情况进行类的职责拆分，以满足设计原则中的<code>单一职责</code>原则。由于Setter注入主要是对Bean的可选依赖项进行注入，建议在开发的过程中为属性预先提供默认值，不然，在使用Bean的时候，一定要对Bean的依赖项进行非空检查，因为我没办法知道Bean的依赖项是否已经被IoC容器在初始化的时候注入到Bean。但是Setter注入的一个好处就是，属性的Setter方法可以使该Bean的对象在初始化以后，使用新的依赖项替换现有依赖项。<br>具体<code>构造注入</code>和<code>Setter注入</code>哪个更好，浏览一下Spring社区，各持己见，褒贬不一。我觉得还得从实际使用场景来选择，例如在使用一个为开源的工具包时，工具包仅说明某工具类提供了某个构造方法进行对象实例化，并未提供Setter方法，那这种情况就只能使用构造注入。</p>
+<h3 id="循环依赖问题"><a href="#循环依赖问题" class="headerlink" title="循环依赖问题"></a>循环依赖问题</h3><p><code>循环依赖</code>问题一般发生在使用<code>构造注入</code>的场景。如下配置：<br>Java代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClassA</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> ClassB classB;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ClassA</span><span class="params">(ClassB classB)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.classB = classB;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClassB</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> ClassA classA;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ClassB</span><span class="params">(ClassA classA)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.classA = classA;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Spring配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;classA&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.pandora.bean.ClassA&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">ref</span>=<span class="string">&quot;classB&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;classB&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.pandora.bean.ClassB&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">ref</span>=<span class="string">&quot;classA&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在Spring容器启动阶段，通过读取提供的配置元数据进行Spring容器初始化，在初始化过程中，对SpringIoC容器维护的Bean清单进行自检，检测该清单上的依赖项，如果发现<code>ClassA</code>和<code>ClassB</code>相互依赖，并且使用的是构造注入，就会抛出<code>BeanCurrentlyInCreationException</code>异常，并且会提示如下信息</p>
+<blockquote>
+<p>Error creating bean with name ‘classA’: Requested bean is currently in creation: Is there an unresolvable circular reference?</p>
+</blockquote>
+<p>Spring检测到<code>ClassA</code>和<code>ClassB</code>相互依赖关系，并且由于都是强依赖，SpringIoC懵逼了，咋搞嘞？搞不定，算了，抛异常吧。这是个典型的<code>先有鸡还是先有蛋的问题</code>。因为这是致命问题，所以必须在SpringIoC容器启动时进行检测。那如果真实的使用场景必须实现<code>ClassA</code>和<code>ClassB</code>的相互依赖关系该怎么办呢？其实这和Java并发模型中的死锁模型很相似，死锁产生的原因就是两个线程各自持有一个锁不肯放，还依赖对方手里的锁进行解锁，这时候就掐架了。一种解决方案就是，修改其中一个类的代码，将<code>构造注入变为Setter注入</code>，并将另一个使用构造注入的Bean设置为<code>懒加载</code>（lazy-init），虽然官方不推荐这么做，但是使用这个方式确实可以解决循环依赖的问题，原因就是Setter注入是在Bean实例化后进行，而懒加载配置又使得Bean不在IoC容器初始化时实例化，尽在首次被调用时才实例化。如下配置：</p>
+<p>Java代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClassA</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> ClassB classB;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ClassA</span><span class="params">(ClassB classB)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.classB = classB;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ClassB</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> ClassA classA;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setClassA</span><span class="params">(ClassA classA)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.classA = classA;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Spring配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;classA&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.pandora.bean.ClassA&quot;</span> <span class="attr">lazy-init</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">ref</span>=<span class="string">&quot;classB&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;classB&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.pandora.bean.ClassB&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;classA&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;classA&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Spring启动日志</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1. 17:58:16,066 DEBUG main xml.XmlBeanDefinitionReader:224 - Loaded 2 bean definitions from location pattern [application-context.xml]</span><br><span class="line">2. 17:58:16,227 DEBUG main support.DefaultListableBeanFactory:725 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@481a996b: defining beans [classA,classB]; root of factory hierarchy</span><br><span class="line">3. 17:58:16,229 DEBUG main support.DefaultListableBeanFactory:221 - Creating shared instance of singleton bean &#x27;classB&#x27;</span><br><span class="line">4. 17:58:16,229 DEBUG main support.DefaultListableBeanFactory:447 - Creating instance of bean &#x27;classB&#x27;</span><br><span class="line">5. 17:58:16,254 DEBUG main support.DefaultListableBeanFactory:537 - Eagerly caching bean &#x27;classB&#x27; to allow for resolving potential circular references</span><br><span class="line">6. 17:58:16,257 DEBUG main support.DefaultListableBeanFactory:221 - Creating shared instance of singleton bean &#x27;classA&#x27;</span><br><span class="line">7. 17:58:16,257 DEBUG main support.DefaultListableBeanFactory:447 - Creating instance of bean &#x27;classA&#x27;</span><br><span class="line">8. 17:58:16,261 DEBUG main support.DefaultListableBeanFactory:247 - Returning eagerly cached instance of singleton bean &#x27;classB&#x27; that is not fully initialized yet - a consequence of a circular reference</span><br><span class="line">9. 17:58:16,290 DEBUG main support.DefaultListableBeanFactory:537 - Eagerly caching bean &#x27;classA&#x27; to allow for resolving potential circular references</span><br><span class="line">10. 17:58:16,316 DEBUG main support.DefaultListableBeanFactory:483 - Finished creating instance of bean &#x27;classA&#x27;</span><br><span class="line">11. 17:58:16,409 DEBUG main support.DefaultListableBeanFactory:483 - Finished creating instance of bean &#x27;classB&#x27;</span><br><span class="line">12. 17:58:16,412 DEBUG main support.DefaultListableBeanFactory:251 - Returning cached instance of singleton bean &#x27;lifecycleProcessor&#x27;</span><br><span class="line">13. 17:58:16,418 DEBUG main support.DefaultListableBeanFactory:251 - Returning cached instance of singleton bean &#x27;classA&#x27;</span><br><span class="line">14. 17:58:16,419 DEBUG main support.DefaultListableBeanFactory:251 - Returning cached instance of singleton bean &#x27;classB&#x27;</span><br></pre></td></tr></table></figure>
+<p>分析Spring容器启动日志发现，在IoC容器启动时，先以单例作用域创建名为<code>classB</code>的Bean,因在<code>classB</code>中<code>classA</code>属性为可选依赖，则可以预先实例化，实例化后将其放入高速缓存当中，此时<code>classB</code>的实例化并未完成，暂时停止。由于<code>classB</code>中有对<code>classA</code>的依赖，此时对<code>classA</code>进行实例化，而因<code>classA</code>中对<code>classB</code>的依赖，早在实例化<code>classA</code>之前实例化好了，所以直接从高速缓存中取<code>classB</code>对象，注意第8行，Spring已经打印出了日志，告知因为发现了循环引用，所以此时的<code>classB</code>从高速缓存中返回。最后在<code>classA</code>以单例作用于实例化完成后，<code>classA</code>与<code>classB</code>全部完成实例化。而第12，13，14是客户端操作IoC容器获取Bean对象的日志信息。以上涉及到的<code>Bean作用域</code>、<code>懒加载</code>等，以后再写几篇慢慢补充</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本篇简单总结了一下Spring依赖注入的两种配置方式——<code>构造注入</code>和<code>Setter注入</code>，以及两中方式的优缺点对比。<br><code>构造注入</code></p>
+<ul>
+<li>为强依赖项提供依赖注入配置</li>
+<li>优点：可以实现Bean为不可变对象、且客户端拿到的Bean是完整的、官方推荐</li>
+<li>缺点：可能产生循环依赖问题、依赖过多导致构造函数参数个数增加</li>
+</ul>
+<p><code>Setter注入</code></p>
+<ul>
+<li>为可选依赖项提供注入配置</li>
+<li>优点：在Bean实例化后进行可提供依赖的替换、不会出现循环依赖问题</li>
+<li>缺点：客户端拿到的对象可能是不完整的，需要进行依赖项判空检查</li>
+</ul>
+<p>无论是<code>构造注入</code>还是<code>Setter注入</code>，都各有利弊。任何事情都需要从两方面看，工程师可以利用技术和工具完成项目需求，但技术和工具往往都是<code>双刃剑</code>，在使用的过程中一定要根据使用场景进行技术选型，有些技术在某些特定的业务场景下就不适用，而有的虽然不是主流，但仍可以在某些场景解决某些实际问题。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Chen
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://chenzhihao.cc/2019/12/06/Spring-%E6%B5%85%E8%B0%88%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" title="Spring-浅谈依赖注入">https://chenzhihao.cc/2019/12/06/Spring-浅谈依赖注入/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/12/03/Spring%E5%AD%A6%E4%B9%A0%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" rel="prev" title="Spring学习过程总结">
+                  <i class="fa fa-angle-left"></i> Spring学习过程总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/09/Spring-%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A5%E9%82%A3%E7%82%B9%E4%BA%8B%E5%84%BF/" rel="next" title="Spring-属性注入那点事儿">
+                  Spring-属性注入那点事儿 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="SOHUCS" sid="d327a6e94fd24d4d18cc28a9c7a85b8c"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"forest","dark":"forest"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.min.js","integrity":"sha256-TtLOdUA8mstPoO6sGvHIGx2ceXrrX4KgIItO06XOn8A="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyvYJIVq9","appkey":"75e4ade7804f4dc17e257a70697930d2","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+
+</body>
+</html>

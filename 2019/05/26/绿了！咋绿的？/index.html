@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"chenzhihao.cc","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"width_expanded":320,"width_dual_column":240},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="使用letsencrypt搞了一套免费SSL证书，绿了，看着就舒服，看看老哥的大A（虽么h2老钱的A+牛）  1.准备下载Certbot：https:&#x2F;&#x2F;github.com&#x2F;certbot&#x2F;certbot 2.注册移步解压目录，执行命令，如果没错，应有类似如下提示 1.&#x2F;certbot-auto certonly --standalone --email 邮箱地址 -d 域名1 -d 域名2 .">
+<meta property="og:type" content="article">
+<meta property="og:title" content="绿了！咋绿的？">
+<meta property="og:url" content="https://chenzhihao.cc/2019/05/26/%E7%BB%BF%E4%BA%86%EF%BC%81%E5%92%8B%E7%BB%BF%E7%9A%84%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Chen&#39;s Blog">
+<meta property="og:description" content="使用letsencrypt搞了一套免费SSL证书，绿了，看着就舒服，看看老哥的大A（虽么h2老钱的A+牛）  1.准备下载Certbot：https:&#x2F;&#x2F;github.com&#x2F;certbot&#x2F;certbot 2.注册移步解压目录，执行命令，如果没错，应有类似如下提示 1.&#x2F;certbot-auto certonly --standalone --email 邮箱地址 -d 域名1 -d 域名2 .">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://chenzhihao.cc/images/WX20170821-010315.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/WX20170821-012214@2x.png">
+<meta property="article:published_time" content="2019-05-26T04:19:39.000Z">
+<meta property="article:modified_time" content="2024-04-28T08:11:41.506Z">
+<meta property="article:author" content="Chen">
+<meta property="article:tag" content="ssl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://chenzhihao.cc/images/WX20170821-010315.png">
+
+
+<link rel="canonical" href="https://chenzhihao.cc/2019/05/26/%E7%BB%BF%E4%BA%86%EF%BC%81%E5%92%8B%E7%BB%BF%E7%9A%84%EF%BC%9F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://chenzhihao.cc/2019/05/26/%E7%BB%BF%E4%BA%86%EF%BC%81%E5%92%8B%E7%BB%BF%E7%9A%84%EF%BC%9F/","path":"2019/05/26/绿了！咋绿的？/","title":"绿了！咋绿的？"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>绿了！咋绿的？ | Chen's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chen's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">1.准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%B3%A8%E5%86%8C"><span class="nav-number">2.</span> <span class="nav-text">2.注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AE%EF%BC%88Nginx%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">3.配置（Nginx）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E5%92%8B%E5%8A%9E%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">过期咋办？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%AF%81%E4%B9%A6%E6%B3%A8%E5%86%8C%E5%A4%B1%E8%B4%A5%EF%BC%9F"><span class="nav-number">5.1.</span> <span class="nav-text">1. 证书注册失败？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE%E5%A5%BD%E4%B8%BA%E4%BD%95%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%EF%BC%9F"><span class="nav-number">5.2.</span> <span class="nav-text">2. 配置好为何无法访问？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E6%97%A0%E6%B3%95%E9%87%8D%E6%96%B0%E6%B3%A8%E5%86%8C%EF%BC%9F"><span class="nav-number">5.3.</span> <span class="nav-text">3. 为什么我无法重新注册？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%B8%BA%E6%AF%9B%E6%9C%89%E7%9A%84%E9%A1%B5%E9%9D%A2%E7%BB%BF%EF%BC%8C%E6%9C%89%E7%9A%84%E4%B8%8D%E7%BB%BF%EF%BC%9F"><span class="nav-number">5.4.</span> <span class="nav-text">4. 为毛有的页面绿，有的不绿？</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chen"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Chen</p>
+  <div class="site-description" itemprop="description">Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/haozishuizhaole" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;haozishuizhaole" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chenzhihao.cc/2019/05/26/%E7%BB%BF%E4%BA%86%EF%BC%81%E5%92%8B%E7%BB%BF%E7%9A%84%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Chen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Blog">
+      <meta itemprop="description" content="Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="绿了！咋绿的？ | Chen's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          绿了！咋绿的？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-05-26 12:19:39" itemprop="dateCreated datePublished" datetime="2019-05-26T12:19:39+08:00">2019-05-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-28 16:11:41" itemprop="dateModified" datetime="2024-04-28T16:11:41+08:00">2024-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="绿了！咋绿的？" href="/2019/05/26/%E7%BB%BF%E4%BA%86%EF%BC%81%E5%92%8B%E7%BB%BF%E7%9A%84%EF%BC%9F/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::42ce0bea45bb1a23369649740e319247" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>使用letsencrypt搞了一套免费SSL证书，绿了，看着就舒服，看看老哥的<a target="_blank" rel="noopener" href="https://www.ssllabs.com/ssltest/analyze.html?d=chenzhihao.cc">大A</a>（虽么h2<a target="_blank" rel="noopener" href="https://www.ssllabs.com/ssltest/analyze.html?d=qiananhua.com">老钱</a>的A+牛）</p>
+<p><img data-src="/images/WX20170821-010315.png" alt="image"></p>
+<h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1.准备"></a>1.准备</h2><p>下载Certbot：<a target="_blank" rel="noopener" href="https://github.com/certbot/certbot">https://github.com/certbot/certbot</a></p>
+<h2 id="2-注册"><a href="#2-注册" class="headerlink" title="2.注册"></a>2.注册</h2><p>移步解压目录，执行命令，如果没错，应有类似如下提示</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./certbot-auto certonly --standalone --email 邮箱地址 -d 域名1 -d 域名2 ... -d 域名n</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/WX20170821-012214@2x.png" alt="image"></p>
+<h2 id="3-配置（Nginx）"><a href="#3-配置（Nginx）" class="headerlink" title="3.配置（Nginx）"></a>3.配置（Nginx）</h2><p>直接贴上本站配置。重启Nginx即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        listen 443 ssl;</span><br><span class="line">        ssl on;</span><br><span class="line"> </span><br><span class="line">        ssl_certificate /etc/letsencrypt/live/域名/fullchain.pem;</span><br><span class="line">        ssl_certificate_key /etc/letsencrypt/live/域名/privkey.pem;</span><br><span class="line">        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span><br><span class="line">        # 密码套件来自 http://www.oschina.net/translate/strong_ssl_security_on_nginx</span><br><span class="line">        ssl_ciphers &quot;ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4&quot;;</span><br><span class="line">        ssl_prefer_server_ciphers on;</span><br><span class="line"> </span><br><span class="line">        if ($scheme = http)&#123;</span><br><span class="line">                rewrite ^(.*)$ https://$host$1 permanent;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">    location ~ /\.</span><br><span class="line">        &#123;</span><br><span class="line">                deny all;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">    location ~ /.well-known &#123;</span><br><span class="line">                allow all;</span><br><span class="line">        &#125;</span><br><span class="line">      </span><br><span class="line">        # and so on</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="过期咋办？"><a href="#过期咋办？" class="headerlink" title="过期咋办？"></a>过期咋办？</h2><p>证书过期时间为90天，所以需要定期的执行重新注册命令。当然，一个定时任务就搞定</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./certbot-auto renew --dry-run</span><br><span class="line">./certbot-auto renew -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="1-证书注册失败？"><a href="#1-证书注册失败？" class="headerlink" title="1. 证书注册失败？"></a>1. 证书注册失败？</h3><blockquote>
+<p>Failed authorization procedure. chenzhihao.cc (tls-sni-01): urn:acme:error:connection :: The server could not connect to the client to verify the domain :: Error getting validation data</p>
+</blockquote>
+<ol>
+<li>首先检查Nginx配置文件是否正确</li>
+<li>关闭防火墙</li>
+</ol>
+<h3 id="2-配置好为何无法访问？"><a href="#2-配置好为何无法访问？" class="headerlink" title="2. 配置好为何无法访问？"></a>2. 配置好为何无法访问？</h3><p>没有什么是重启一下Nginx解决不了的，重启后肯定会有报错</p>
+<h3 id="3-为什么我无法重新注册？"><a href="#3-为什么我无法重新注册？" class="headerlink" title="3. 为什么我无法重新注册？"></a>3. 为什么我无法重新注册？</h3><blockquote>
+<p>Attempting to renew cert (域名) from &#x2F;etc&#x2F;letsencrypt&#x2F;renewal&#x2F;域名.conf produced an unexpected error: Problem binding to port 443: Could not bind to IPv4 or IPv6.. Skipping.</p>
+</blockquote>
+<p>在完全杀掉Nginx后执行重新注册命令，然后启动Nginx</p>
+<h3 id="4-为毛有的页面绿，有的不绿？"><a href="#4-为毛有的页面绿，有的不绿？" class="headerlink" title="4. 为毛有的页面绿，有的不绿？"></a>4. 为毛有的页面绿，有的不绿？</h3><p>检查不绿页面是否有单纯的 <code>http://</code> 链接，有则改之</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Chen
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://chenzhihao.cc/2019/05/26/%E7%BB%BF%E4%BA%86%EF%BC%81%E5%92%8B%E7%BB%BF%E7%9A%84%EF%BC%9F/" title="绿了！咋绿的？">https://chenzhihao.cc/2019/05/26/绿了！咋绿的？/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/ssl/" rel="tag"># ssl</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/05/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" rel="prev" title="设计模式之策略模式">
+                  <i class="fa fa-angle-left"></i> 设计模式之策略模式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/05/26/%E8%A7%A3%E5%86%B3%E4%BD%BF%E7%94%A8FastJson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%9B%E5%9E%8B%E7%B1%BB%E6%97%B6%EF%BC%8C%E5%86%85%E9%83%A8%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%9E%8B%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%AF%86%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98/" rel="next" title="解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题">
+                  解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="SOHUCS" sid="42ce0bea45bb1a23369649740e319247"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"forest","dark":"forest"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.min.js","integrity":"sha256-TtLOdUA8mstPoO6sGvHIGx2ceXrrX4KgIItO06XOn8A="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyvYJIVq9","appkey":"75e4ade7804f4dc17e257a70697930d2","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+
+</body>
+</html>

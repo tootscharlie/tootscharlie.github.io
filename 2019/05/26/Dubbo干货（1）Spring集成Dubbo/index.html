@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"chenzhihao.cc","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"width_expanded":320,"width_dual_column":240},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta property="og:type" content="article">
+<meta property="og:title" content="Dubbo干货（1）Spring集成Dubbo">
+<meta property="og:url" content="https://chenzhihao.cc/2019/05/26/Dubbo%E5%B9%B2%E8%B4%A7%EF%BC%881%EF%BC%89Spring%E9%9B%86%E6%88%90Dubbo/index.html">
+<meta property="og:site_name" content="Chen&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://chenzhihao.cc/images/TB1lrnCkXzqK1RjSZFCXXbbxVXa-1340-328-1024x251.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/zookeeper.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/%E6%96%B0%E5%BB%BA%E9%A1%B9%E7%9B%AE.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/2.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/3.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/api1.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/api2.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/api3.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/4.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/5.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/6.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/7.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/tomcat1.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/tomcat2.png">
+<meta property="og:image" content="https://chenzhihao.cc/images/a.png">
+<meta property="article:published_time" content="2019-05-26T05:25:28.000Z">
+<meta property="article:modified_time" content="2024-04-28T08:11:41.494Z">
+<meta property="article:author" content="Chen">
+<meta property="article:tag" content="dubbo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://chenzhihao.cc/images/TB1lrnCkXzqK1RjSZFCXXbbxVXa-1340-328-1024x251.png">
+
+
+<link rel="canonical" href="https://chenzhihao.cc/2019/05/26/Dubbo%E5%B9%B2%E8%B4%A7%EF%BC%881%EF%BC%89Spring%E9%9B%86%E6%88%90Dubbo/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://chenzhihao.cc/2019/05/26/Dubbo%E5%B9%B2%E8%B4%A7%EF%BC%881%EF%BC%89Spring%E9%9B%86%E6%88%90Dubbo/","path":"2019/05/26/Dubbo干货（1）Spring集成Dubbo/","title":"Dubbo干货（1）Spring集成Dubbo"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Dubbo干货（1）Spring集成Dubbo | Chen's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chen's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">前置条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-%E5%90%AF%E5%8A%A8Zookeeper"><span class="nav-number">3.</span> <span class="nav-text">安装&amp;启动Zookeeper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAlearnDemo%E9%A1%B9%E7%9B%AE"><span class="nav-number">4.</span> <span class="nav-text">创建learnDemo项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAprovider-api"><span class="nav-number">5.</span> <span class="nav-text">创建provider-api</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAprovider"><span class="nav-number">6.</span> <span class="nav-text">创建provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%8C%E6%96%B0%E5%BB%BA%E6%A8%A1%E5%9D%97"><span class="nav-number">6.1.</span> <span class="nav-text">第一步，新建模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%8C%E6%B7%BB%E5%8A%A0api%E6%A8%A1%E5%9D%97%E4%BE%9D%E8%B5%96"><span class="nav-number">6.2.</span> <span class="nav-text">第二步，添加api模块依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%8C%E6%B7%BB%E5%8A%A0%E6%97%A5%E5%BF%97%E9%85%8D%E7%BD%AE%EF%BC%8Cweb%E5%AE%B9%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">6.3.</span> <span class="nav-text">第三步，添加日志配置，web容器配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%8C%E5%88%9B%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%B1%BB"><span class="nav-number">6.4.</span> <span class="nav-text">第四步，创建服务实现类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%8C%E6%B7%BB%E5%8A%A0dubbo%E9%85%8D%E7%BD%AE"><span class="nav-number">6.5.</span> <span class="nav-text">第五步，添加dubbo配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAconsumer"><span class="nav-number">7.</span> <span class="nav-text">创建consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E7%AC%AC%E4%B8%89%E6%AD%A5"><span class="nav-number">7.1.</span> <span class="nav-text">第一步~第三步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%8C%E6%B7%BB%E5%8A%A0dubbo%E9%85%8D%E7%BD%AE"><span class="nav-number">7.2.</span> <span class="nav-text">第四步，添加dubbo配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%8C%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E9%80%BB%E8%BE%91"><span class="nav-number">7.3.</span> <span class="nav-text">第五步，实现服务调用逻辑</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E5%89%8DTomcat%E9%85%8D%E7%BD%AE"><span class="nav-number">8.</span> <span class="nav-text">运行前Tomcat配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1%E5%B9%B6%E8%B0%83%E7%94%A8Consumer%E6%9C%8D%E5%8A%A1"><span class="nav-number">9.</span> <span class="nav-text">启动服务并调用Consumer服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%9D%91"><span class="nav-number">10.</span> <span class="nav-text">一些坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chen"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Chen</p>
+  <div class="site-description" itemprop="description">Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/haozishuizhaole" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;haozishuizhaole" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chenzhihao.cc/2019/05/26/Dubbo%E5%B9%B2%E8%B4%A7%EF%BC%881%EF%BC%89Spring%E9%9B%86%E6%88%90Dubbo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Chen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Blog">
+      <meta itemprop="description" content="Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Dubbo干货（1）Spring集成Dubbo | Chen's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Dubbo干货（1）Spring集成Dubbo
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-05-26 13:25:28" itemprop="dateCreated datePublished" datetime="2019-05-26T13:25:28+08:00">2019-05-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-28 16:11:41" itemprop="dateModified" datetime="2024-04-28T16:11:41+08:00">2024-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="Dubbo干货（1）Spring集成Dubbo" href="/2019/05/26/Dubbo%E5%B9%B2%E8%B4%A7%EF%BC%881%EF%BC%89Spring%E9%9B%86%E6%88%90Dubbo/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::758b8f643783e5e596714a58073ba5f4" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img data-src="/images/TB1lrnCkXzqK1RjSZFCXXbbxVXa-1340-328-1024x251.png" alt="dubbo"></p>
+<span id="more"></span>
+
+<h2 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h2><p>熟悉Spring开发和配置。</p>
+<p>Dubbo官网学习地址：<a target="_blank" rel="noopener" href="https://dubbo.apache.org/zh-cn/">点击学习</a></p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>开发软件：IDEA 2019</p>
+<p>JDK：1.8</p>
+<p>Spring全家桶：4.3.24.RELEAS</p>
+<p>Dubbo：2.5.7（<a target="_blank" rel="noopener" href="https://mvnrepository.com/artifact/com.alibaba/dubbo">阿里巴巴</a>）</p>
+<p>Zookeeper：3.4.14</p>
+<p>zkclient：0.11</p>
+<p>slf4j-log4j12</p>
+<h2 id="安装-启动Zookeeper"><a href="#安装-启动Zookeeper" class="headerlink" title="安装&amp;启动Zookeeper"></a>安装&amp;启动Zookeeper</h2><p>下载Zookeeper（<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/">点击进入清华Zookeeper镜像站</a>），解压到本地目录，进入<code>解压目录/bin</code>，双击<code>zkServer.cmd</code>（通过cmd命令行界面执行）。Unix系统同学请执行 <code>zkServer.sh</code> 脚本文件。执行后，命令行界面如下则表示启动成功。<br><img data-src="/images/zookeeper.png" alt="zookeeper"></p>
+<h2 id="创建learnDemo项目"><a href="#创建learnDemo项目" class="headerlink" title="创建learnDemo项目"></a>创建learnDemo项目</h2><p>创建learnDemo项目，new project如图，填写artifactId、groupId、moduleName和项目地址，完成父项目创建。<br><img data-src="/images/%E6%96%B0%E5%BB%BA%E9%A1%B9%E7%9B%AE.png" alt="1"></p>
+<p><img data-src="/images/2.png" alt="2"></p>
+<p><img data-src="/images/3.png" alt="3"></p>
+<p>新建项目后，修改pom文件，添加相关依赖的配置，供子Module使用，避免重复配置。</p>
+<h2 id="创建provider-api"><a href="#创建provider-api" class="headerlink" title="创建provider-api"></a>创建provider-api</h2><p>因为服务提供者（Provider）需要暴露服务API接口给服务消费者（Consumer），生产环境需要将Provider项目中包含暴露服务API的jar包发布（例如：Maven仓库）供消费者使用。这里将生产者和消费者做在一个项目内，使用不同的Module拆分，将Provider的API单独创建一个Module，由Provider和Consumer分别引用。</p>
+<p>新建Module，如图创建provider-api模块：<br><img data-src="/images/api1.png" alt="1"></p>
+<p><img data-src="/images/api2.png" alt="2"></p>
+<p><img data-src="/images/api3.png" alt="3"></p>
+<p>在provider-api模块中新建<code>server</code>包，在包下创建接口 <code>ITestService</code>，用于定义Provider服务提供的功能定义。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> server;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ITestService</span> &#123;</span><br><span class="line"> </span><br><span class="line">    String <span class="title function_">hello</span><span class="params">(String data)</span>;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="创建provider"><a href="#创建provider" class="headerlink" title="创建provider"></a>创建provider</h2><h3 id="第一步，新建模块"><a href="#第一步，新建模块" class="headerlink" title="第一步，新建模块"></a>第一步，新建模块</h3><p>创建生产者。新建Module，如图创建provider模块：</p>
+<p>注：这里创建的是web项目，建议选择<code>maven-archetype-webapp</code> 模板，会自动生成 <code>web</code>目录。如果不选择， 也可以创建Maven项目，手动创建相关目录并进行配置。</p>
+<p><img data-src="/images/4.png" alt="4"></p>
+<p><img data-src="/images/5.png" alt="5"></p>
+<p><img data-src="/images/6.png" alt="6"></p>
+<p><img data-src="/images/7.png" alt="7"></p>
+<h3 id="第二步，添加api模块依赖"><a href="#第二步，添加api模块依赖" class="headerlink" title="第二步，添加api模块依赖"></a>第二步，添加api模块依赖</h3><p>修改provider项目pom文件，添加对<code>provider-api</code>模块的引用。</p>
+<h3 id="第三步，添加日志配置，web容器配置"><a href="#第三步，添加日志配置，web容器配置" class="headerlink" title="第三步，添加日志配置，web容器配置"></a>第三步，添加日志配置，web容器配置</h3><p>修改web.xml，添加Spring IoC容器配置和DispatcherServlet相关配置，此处省略，不会的我只能理解你不了解Spring，请先自行百度。</p>
+<p>在Resources目录下创建 <code>log4j.properties</code> 文件，用于打印日志，文件内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">log4j.rootLogger=DEBUG,A1</span><br><span class="line">log4j.appender.A1=org.apache.log4j.ConsoleAppender</span><br><span class="line">log4j.appender.A1.layout=org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.A1.layout.ConversionPattern=%-d&#123;yyyy-MM-dd  HH:mm:ss,SSS&#125; [%t] [%c]-[%p] %m%n</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四步，创建服务实现类"><a href="#第四步，创建服务实现类" class="headerlink" title="第四步，创建服务实现类"></a>第四步，创建服务实现类</h3><p>新建server包，在包下新建服务实现类 <code>TestServerImpl</code>，实现 <code>TestService</code> 接口并实现其中的接口方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cc.chenzhihao.provider.server;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"><span class="keyword">import</span> server.ITestService;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 服务业务实现类</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> chenzhihao</span></span><br><span class="line"><span class="comment"> * Email: s_chenzh@jiedaibao.com</span></span><br><span class="line"><span class="comment"> * Date; 2019/5/11 23:16</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">ITestService</span> &#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">logger</span> <span class="operator">=</span> LoggerFactory.getLogger(<span class="built_in">this</span>.getClass());</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">(String data)</span> &#123;</span><br><span class="line">        logger.info(<span class="string">&quot;invoke server, data = &#123;&#125;&quot;</span>, data);</span><br><span class="line">        <span class="keyword">return</span> String.format(<span class="string">&quot;Provider say \&quot; hello %s \&quot;&quot;</span>, data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第五步，添加dubbo配置"><a href="#第五步，添加dubbo配置" class="headerlink" title="第五步，添加dubbo配置"></a>第五步，添加dubbo配置</h3><p>在<code>Resources</code>目录下新建 <code>application-context.xml</code>，添加如下配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.springframework.org/schema/beans&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">&quot;http://www.springframework.org/schema/context&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:dubbo</span>=<span class="string">&quot;http://code.alibabatech.com/schema/dubbo&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://www.springframework.org/schema/beans</span></span></span><br><span class="line"><span class="string"><span class="tag">        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</span></span></span><br><span class="line"><span class="string"><span class="tag">        http://www.springframework.org/schema/context</span></span></span><br><span class="line"><span class="string"><span class="tag">        http://www.springframework.org/schema/context/spring-context-3.2.xsd</span></span></span><br><span class="line"><span class="string"><span class="tag">        http://code.alibabatech.com/schema/dubbo</span></span></span><br><span class="line"><span class="string"><span class="tag">         http://code.alibabatech.com/schema/dubbo/dubbo.xsd&quot;</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">&quot;cc.chenzhihao.provider.*&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 提供方应用信息，用于计算依赖关系 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:application</span> <span class="attr">name</span>=<span class="string">&quot;provider&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 使用zookeeper注册中心暴露服务地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:registry</span> <span class="attr">address</span>=<span class="string">&quot;zookeeper://localhost:2181&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 用dubbo协议在20880端口暴露服务 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">&quot;dubbo&quot;</span> <span class="attr">port</span>=<span class="string">&quot;20880&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 声明需要暴露的服务接口 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:service</span> <span class="attr">interface</span>=<span class="string">&quot;server.ITestService&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;testService&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 和本地bean一样实现服务 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;testService&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.provider.server.TestServiceImpl&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="创建consumer"><a href="#创建consumer" class="headerlink" title="创建consumer"></a>创建consumer</h2><h3 id="第一步-第三步"><a href="#第一步-第三步" class="headerlink" title="第一步~第三步"></a>第一步~第三步</h3><p>同Provider，此处省略。</p>
+<h3 id="第四步，添加dubbo配置"><a href="#第四步，添加dubbo配置" class="headerlink" title="第四步，添加dubbo配置"></a>第四步，添加dubbo配置</h3><p>在<code>Resources</code>目录下新建 <code>application-context.xml</code>，添加如下配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.springframework.org/schema/beans&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">&quot;http://www.springframework.org/schema/context&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:dubbo</span>=<span class="string">&quot;http://code.alibabatech.com/schema/dubbo&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://www.springframework.org/schema/beans</span></span></span><br><span class="line"><span class="string"><span class="tag">        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</span></span></span><br><span class="line"><span class="string"><span class="tag">        http://www.springframework.org/schema/context</span></span></span><br><span class="line"><span class="string"><span class="tag">        http://www.springframework.org/schema/context/spring-context-3.2.xsd</span></span></span><br><span class="line"><span class="string"><span class="tag">        http://code.alibabatech.com/schema/dubbo</span></span></span><br><span class="line"><span class="string"><span class="tag">         http://code.alibabatech.com/schema/dubbo/dubbo.xsd&quot;</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">&quot;cc.chenzhihao.consumer.*&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 消费方应用信息，用于计算依赖关系 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:application</span> <span class="attr">name</span>=<span class="string">&quot;consumer&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 使用zookeeper注册中心暴露服务地址 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:registry</span> <span class="attr">address</span>=<span class="string">&quot;zookeeper://localhost:2181&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 用dubbo协议在20880端口暴露服务 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:protocol</span> <span class="attr">name</span>=<span class="string">&quot;dubbo&quot;</span> <span class="attr">port</span>=<span class="string">&quot;20880&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 声明需要引用的服务接口 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:reference</span> <span class="attr">interface</span>=<span class="string">&quot;server.ITestService&quot;</span> <span class="attr">id</span>=<span class="string">&quot;testService&quot;</span>/&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="第五步，实现服务调用逻辑"><a href="#第五步，实现服务调用逻辑" class="headerlink" title="第五步，实现服务调用逻辑"></a>第五步，实现服务调用逻辑</h3><p>新建 <code>TestController</code>，注入并调用服务接口业务方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cc.chenzhihao.consumer.controller;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMethod;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.ResponseBody;</span><br><span class="line"><span class="keyword">import</span> server.ITestService;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> chenzhihao</span></span><br><span class="line"><span class="comment"> * Email: s_chenzh@jiedaibao.com</span></span><br><span class="line"><span class="comment"> * Date; 2019/5/11 23:40</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestController</span> &#123;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    ITestService testService;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;/hello&quot;, method = RequestMethod.GET)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> testService.hello(name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行前Tomcat配置"><a href="#运行前Tomcat配置" class="headerlink" title="运行前Tomcat配置"></a>运行前Tomcat配置</h2><p>添加两个Tomcat启动配置，以Provider为例，Consumer类似。</p>
+<p>注：两个Tomcat启动配置，各自HTTP端口和JMX端口不能一致，可以修改为8080和8081</p>
+<p><img data-src="/images/tomcat1.png" alt="tomcat1"></p>
+<p><img data-src="/images/tomcat2.png" alt="tomcat2"></p>
+<h2 id="启动服务并调用Consumer服务"><a href="#启动服务并调用Consumer服务" class="headerlink" title="启动服务并调用Consumer服务"></a>启动服务并调用Consumer服务</h2><p>先后启动Provider和Consumer，启动时系统会自动向注册中心注册或订阅服务，会有日志打印，如图表示启动成功：<br><img data-src="/images/a.png" alt="a"></p>
+<p>使用浏览器访问Consumer接口，测试服务是否正常调用</p>
+<h2 id="一些坑"><a href="#一些坑" class="headerlink" title="一些坑"></a>一些坑</h2><ul>
+<li>Dubbo的版本选择要慎重，有一些报错原因并不是代码书写问题，而是版本不兼容导致，详细请查看Dubbo相关Q&amp;A</li>
+<li>启动前，注意本地回环地址配置，服务在注册时获取的注册中心地址有时默认会获取为为局域网地址，此时可以尝试关闭本机防火墙，配置局域网内端口转发等</li>
+<li>Zookeeper，zkclient包一定要引，否则启动或接口调用时会报错</li>
+<li>提示 No Provider *** 90%的原因时因为Provider没有注册到注册中心，可以尝试查看。剩下10%是因为本地回环地址的原因，我踩地雷了….</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>半小时就可以搞定，结果我搞了一天半，原因在于对于Dubbo一些坑的摸索，其中因本地回环地址导致服务注册无法调用服务，提示服务未注册或无法启动等情况层出不穷，相信很多同学也像我一样遇到了问题。</p>
+<p>通过这篇文章，总结了一下Dubbo和Spring整合的过程，希望能引领大家初尝Dubbo的味道。Dubbo系列将持续更新，不会很系统，接下来会列一些采坑集锦。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Chen
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://chenzhihao.cc/2019/05/26/Dubbo%E5%B9%B2%E8%B4%A7%EF%BC%881%EF%BC%89Spring%E9%9B%86%E6%88%90Dubbo/" title="Dubbo干货（1）Spring集成Dubbo">https://chenzhihao.cc/2019/05/26/Dubbo干货（1）Spring集成Dubbo/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/dubbo/" rel="tag"># dubbo</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/05/26/Hello-Ren-Ren/" rel="prev" title="Hello Ren Ren!">
+                  <i class="fa fa-angle-left"></i> Hello Ren Ren!
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/06/13/Springmvc%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E4%BC%98%E9%9B%85%E5%A4%84%E6%96%B9%E5%BC%8F/" rel="next" title="Springmvc请求参数的优雅处方式">
+                  Springmvc请求参数的优雅处方式 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="SOHUCS" sid="758b8f643783e5e596714a58073ba5f4"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"forest","dark":"forest"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.min.js","integrity":"sha256-TtLOdUA8mstPoO6sGvHIGx2ceXrrX4KgIItO06XOn8A="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyvYJIVq9","appkey":"75e4ade7804f4dc17e257a70697930d2","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+
+</body>
+</html>

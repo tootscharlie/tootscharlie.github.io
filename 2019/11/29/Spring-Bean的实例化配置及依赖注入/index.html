@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"chenzhihao.cc","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"width_expanded":320,"width_dual_column":240},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="上一篇文章Spring:简单摆弄一下SpringIoC容器简单介绍了SpringIoC容器，并创建了一个Demo项目，演示了两种配置元数据的创建方式，以及利用相应的ApplicationContext读取配置元数据初始化SpringIoC容器，最后在测试方法中启动IoC容器并从容器中根据名称、类型获取Bean的过程。本篇总结一下如何在配置元数据中配置Bean的实例化方式以及Bean所需的外部依赖注">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring:Bean的实例化配置及依赖注入">
+<meta property="og:url" content="https://chenzhihao.cc/2019/11/29/Spring-Bean%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:site_name" content="Chen&#39;s Blog">
+<meta property="og:description" content="上一篇文章Spring:简单摆弄一下SpringIoC容器简单介绍了SpringIoC容器，并创建了一个Demo项目，演示了两种配置元数据的创建方式，以及利用相应的ApplicationContext读取配置元数据初始化SpringIoC容器，最后在测试方法中启动IoC容器并从容器中根据名称、类型获取Bean的过程。本篇总结一下如何在配置元数据中配置Bean的实例化方式以及Bean所需的外部依赖注">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-11-29T03:14:01.000Z">
+<meta property="article:modified_time" content="2024-04-28T08:11:41.498Z">
+<meta property="article:author" content="Chen">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://chenzhihao.cc/2019/11/29/Spring-Bean%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://chenzhihao.cc/2019/11/29/Spring-Bean%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/","path":"2019/11/29/Spring-Bean的实例化配置及依赖注入/","title":"Spring:Bean的实例化配置及依赖注入"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Spring:Bean的实例化配置及依赖注入 | Chen's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chen's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%AE%E5%8F%A8%E7%B5%AE%E5%8F%A8"><span class="nav-number">1.</span> <span class="nav-text">絮叨絮叨</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bean%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">Bean实例化配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.</span> <span class="nav-text">基于构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">基于静态工厂方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%AE%9E%E4%BE%8B%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95"><span class="nav-number">2.3.</span> <span class="nav-text">基于实例工厂方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chen"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Chen</p>
+  <div class="site-description" itemprop="description">Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/haozishuizhaole" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;haozishuizhaole" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chenzhihao.cc/2019/11/29/Spring-Bean%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Chen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Blog">
+      <meta itemprop="description" content="Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Spring:Bean的实例化配置及依赖注入 | Chen's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring:Bean的实例化配置及依赖注入
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-11-29 11:14:01" itemprop="dateCreated datePublished" datetime="2019-11-29T11:14:01+08:00">2019-11-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-28 16:11:41" itemprop="dateModified" datetime="2024-04-28T16:11:41+08:00">2024-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="Spring:Bean的实例化配置及依赖注入" href="/2019/11/29/Spring-Bean%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::927dbba697b25a21d13348ca620be54e" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>上一篇文章<a href="/2019/11/28/Spring-%E7%AE%80%E5%8D%95%E6%91%86%E5%BC%84%E4%B8%80%E4%B8%8BSpringIoC%E5%AE%B9%E5%99%A8/" title="Spring:简单摆弄一下SpringIoC容器">Spring:简单摆弄一下SpringIoC容器</a>简单介绍了SpringIoC容器，并创建了一个Demo项目，演示了两种配置元数据的创建方式，以及利用相应的<code>ApplicationContext</code>读取配置元数据初始化SpringIoC容器，最后在测试方法中启动IoC容器并从容器中根据名称、类型获取Bean的过程。本篇总结一下如何在配置元数据中配置Bean的实例化方式以及Bean所需的外部依赖注入方式（依赖输入），换句话说，以哪些方式告诉SpringIoC容器实例化Bean的方法，以及Bean所需的外部依赖如何注入到Bean中。</p>
+<span id="more"></span>
+
+
+<h2 id="絮叨絮叨"><a href="#絮叨絮叨" class="headerlink" title="絮叨絮叨"></a>絮叨絮叨</h2><p>&#160; &#160; &#160; &#160;在配置元数据（特别是基于XML的配置元数据）中，定义一个Bean（例如：使用<code>&lt;bean&gt;</code>标签）本质上是告诉Spring IoC容器如何创建一个Bean，换句话说，使用配置元数据向IoC容器提供一个<code>配方</code>（Bean定义），使IoC容器知道通过什么方式、注入什么依赖和参数去实例化一个Bean。当客户端调用IoC容器的获取Bean的方法时，IoC容器将查看所有的<code>配方</code>，并根据这些<code>配方</code>封装的配置元数据来创建（或从当前容器或其父容器获取）<code>实例对象</code>。</p>
+<p>&#160; &#160; &#160; &#160;这些<code>Bean的配置信息</code>在IoC容器初始化时，会读取配置元数据中的配置信息，将Bean定义中配置的所有<code>属性</code>和<code>依赖</code>映射为<code>BeanDefinition</code>对象中的属性，最终在IoC容器中形成一大堆<code>BeanDefinition</code>对象。这也就解释了，为什么Spring会很轻松的提供多种<code>配置元数据</code>支持，任何显示的<code>配置元数据</code>定义都会在IoC容器初始化时被映射为<code>BeanDefinition</code>对象。</p>
+<h2 id="Bean实例化配置"><a href="#Bean实例化配置" class="headerlink" title="Bean实例化配置"></a>Bean实例化配置</h2><p>Spring为开发者提供了<code>基于构造函数</code>、<code>基于静态工厂方法</code>和<code>基于实例工厂方法</code>三种Bean的实例化配置方式，以下分别对上述三种方式做一个总结，附带一些Demo示例。</p>
+<h3 id="基于构造函数"><a href="#基于构造函数" class="headerlink" title="基于构造函数"></a>基于构造函数</h3><p>使用<code>基于构造函数</code>的Bean实例化配置引导IoC容器创建该Bean实例的过程，等效于在普通Java程序中使用<code>new</code>操作符调用类的<code>构造函数</code>实例化对象的过程。Spring几乎可以对任何Java类进行整合配置，使其被SpringIoC容器所管理。通常情况下，使用最简单的<code>&lt;bean&gt;</code>单标签配置一个Bean，只需将<code>&lt;bean&gt;</code>标签的<code>class</code>属性指定为类的<code>全限定类名</code>，以及为该类提供一个构造函数即可。例如下面的配置，使用了<code>User</code>类的公共无参构造函数进行Bean实例化配置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cc.chenzhihao;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span>&#123;</span><br><span class="line">    <span class="comment">// 省略属性信息</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;user&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.User&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在Java类不指定构造函数的情况下，Java编译器在编译期间会自动为该类提供一个默认的构造函数，这里不用多说。而上面的Spring配置文件仅指定了该Bean的名称和类型，IoC容器在初始化并加载配置元数据进行Bean实例化时，会通过Java反射机制，调用该类的无参构造方法实例化Bean对象。当不改变上述Spring配置文件，仅对<code>User</code>类进行修改，添加私有（<code>private</code>）无参构造函数或添加带参构造函数时，IoC容器启动时，因无法调用到该类的公共无参构造函数，会导致IoC容器初始化失败，并抛出<code>NoSuchMethodException</code>，因为这是一个致命问题。类似的报错信息提示如下：</p>
+<blockquote>
+<p>Failed to instantiate [cc.chenzhihao.User]: No default constructor found; nested exception is java.lang.NoSuchMethodException: cc.chenzhihao.User.<init>()</p>
+</blockquote>
+<p>那么如果当前需要配置的Bean没有无参构造方法，仅提供了自定义的含参构造函数（示例代码如下），那该怎么办呢？本篇后面关于<code>依赖注入（DI）</code>章节会有解释，请同学们继续往下看吧。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cc.chenzhihao;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">User</span><span class="params">(String name)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 无公共无参构造函数</span></span><br><span class="line">    <span class="comment">// 省略setter/getter</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="基于静态工厂方法"><a href="#基于静态工厂方法" class="headerlink" title="基于静态工厂方法"></a>基于静态工厂方法</h3><p>定义使用静态工厂方法创建的bean时，可以使用class属性指定包含静态工厂方法的类，并使用名为factory-method的属性指定工厂方法本身的名称。您应该能够调用此方法（带有稍后描述的可选参数）并返回一个活动对象，该对象随后将被视为通过构造函数创建的。这种bean定义的一种用法是在旧版代码中调用静态工厂。</p>
+<p>使用<code>静态工厂方法</code>创建Bean时，可以使用<code>&lt;bean&gt;</code>标签的<code>class</code>属性指定<code>工厂类</code>（即包含静态工厂方法的类），并且使用名为<code>factory-method</code>的参数指定<code>静态工厂方法</code>的名称。如此配置，IoC容器启动后，会调用该工厂类的静态工厂方法实例化类对象，并将其交由IoC容器管理，成为一个Bean。</p>
+<blockquote>
+<p>Note：此处<code>&lt;bean&gt;</code>标签的<code>class</code>属性指定的是<code>工厂类的全限定类名</code>，并不是调用静态工厂方法后所产生的Bean对象的类型。<code>id</code>属性依旧被用作实例化后的Bean的名称。</p>
+</blockquote>
+<p>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cc.chenzhihao;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AnimalFactory</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">AnimalFactory</span><span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Cat <span class="title function_">newCat</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Cat</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Dog <span class="title function_">newDog</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Dog</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Spring配置文件代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;cat&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.AnimalFactory&quot;</span> <span class="attr">factory-method</span>=<span class="string">&quot;newCat&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;dog&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.AnimalFactory&quot;</span> <span class="attr">factory-method</span>=<span class="string">&quot;newDog&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上述代码将使用<code>AnimalFactory</code>工厂类的<code>newCat</code>和<code>newDog</code>工厂方法分别创建名为<code>cat</code>和<code>dog</code>两个Bean实例，这个方式在某些场景下非常实用。但上述配置方式也会出现和<code>基于静态工厂方法的Bean实例化配置</code>一样的问题，那就是<code>静态工厂方法需要提供参数该怎么办？</code>，同样，在本篇后面关于<code>依赖注入（DI）</code>章节会有解释，请同学们继续往下看吧。</p>
+<h3 id="基于实例工厂方法"><a href="#基于实例工厂方法" class="headerlink" title="基于实例工厂方法"></a>基于实例工厂方法</h3><p>类似于通过静态工厂方法进行实例化，使用实例工厂方法进行实例化会从容器中调用现有bean的非静态方法来创建新bean。要使用此机制，请将class属性保留为空，并在factory-bean属性中，在当前（或父&#x2F;祖先）容器中指定包含要创建该对象的实例方法的bean的名称。使用factory-method属性设置工厂方法本身的名称。</p>
+<p>使用<code>基于实例工厂方法</code>的Bean实例化配置，类似于使用<code>静态工厂方法</code>的Bean实例化配置。使用该方式，IoC容器会从容器中调用给定Bean的非静态方法来创建新的Bean，在配置时，<code>&lt;bean&gt;</code>的<code>class</code>属性不要填写或留空，并且，在<code>factory-bean</code>属性中，指定当前容器（或父容器）中指定Bean名称的引用。Demo如下：</p>
+<p>实例Java代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cc.chenzhihao;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FruitFactory</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Apple <span class="title function_">newApple</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Apple</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Orange <span class="title function_">newOrange</span><span class="params">(String name)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Orange</span>(name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Spring配置文件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Factory Bean，可以在当前容器，也可以在父容器或祖先容器进行配置 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;fruitFactory&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cc.chenzhihao.FruitFactory&quot;</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 依托Factory Bean的实例工厂方法创建水果Bean对象（NOTE：不要指定class属性）. factory-bean指定实例工厂Bean名称，factory-method指定实力工厂Bean中的实例工厂方法 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;apple&quot;</span> <span class="attr">factory-bean</span>=<span class="string">&quot;fruitFactory&quot;</span> <span class="attr">factory-method</span>=<span class="string">&quot;newApple&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 为工厂方法提供参数 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;orange&quot;</span> <span class="attr">factory-bean</span>=<span class="string">&quot;fruitFactory&quot;</span> <span class="attr">factory-method</span>=<span class="string">&quot;newOrange&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">value</span>=<span class="string">&quot;橙子&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以上代码，Spring会首先实例化<code>fruitFactory</code>，紧接着实例化<code>apple</code>。若工厂方法含有参数，则需要使用<code>&lt;constructor-arg&gt;</code>标签指定参数，使用方式同<code>构造方法实例化</code>。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上简单总结了使用Spring IoC容器<code>配置Bean实例化方式</code>的几种方法（是不是很饶舌~），最简单的是类似<code>new</code>的<code>基于构造函数的Bean实例化配置方式</code>，其次是<code>基于静态/实例工厂方法的Bean实例化配置</code>。</p>
+<p>下面表格简单总结<code>构造函数</code>、<code>静态工厂Bean</code>和<code>实例工厂Bean</code>的异同。</p>
+<table>
+<thead>
+<tr>
+<th align="center">#</th>
+<th align="center">构造函数</th>
+<th align="center">静态工厂</th>
+<th align="center">实例工厂</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">id属性</td>
+<td align="center">Bean名称</td>
+<td align="center">Bean名称</td>
+<td align="center">Bean名称</td>
+</tr>
+<tr>
+<td align="center">class属性</td>
+<td align="center">实际Bean的类型</td>
+<td align="center">工厂Bean类型</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center">factory-bean</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">实例工厂Bean名称</td>
+</tr>
+<tr>
+<td align="center">factory-method</td>
+<td align="center">-</td>
+<td align="center">静态工厂方法</td>
+<td align="center">实例工厂方法</td>
+</tr>
+<tr>
+<td align="center">constructor-arg标签</td>
+<td align="center">提供构造函数参数</td>
+<td align="center">提供工厂方法参数</td>
+<td align="center">提供工厂方法参数</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Chen
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://chenzhihao.cc/2019/11/29/Spring-Bean%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/" title="Spring:Bean的实例化配置及依赖注入">https://chenzhihao.cc/2019/11/29/Spring-Bean的实例化配置及依赖注入/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/11/28/Spring-%E7%AE%80%E5%8D%95%E6%91%86%E5%BC%84%E4%B8%80%E4%B8%8BSpringIoC%E5%AE%B9%E5%99%A8/" rel="prev" title="Spring:简单摆弄一下SpringIoC容器">
+                  <i class="fa fa-angle-left"></i> Spring:简单摆弄一下SpringIoC容器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/03/Spring%E5%AD%A6%E4%B9%A0%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" rel="next" title="Spring学习过程总结">
+                  Spring学习过程总结 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="SOHUCS" sid="927dbba697b25a21d13348ca620be54e"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"forest","dark":"forest"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.min.js","integrity":"sha256-TtLOdUA8mstPoO6sGvHIGx2ceXrrX4KgIItO06XOn8A="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyvYJIVq9","appkey":"75e4ade7804f4dc17e257a70697930d2","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+
+</body>
+</html>

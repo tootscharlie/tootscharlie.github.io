@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"chenzhihao.cc","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"width_expanded":320,"width_dual_column":240},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在开发中经常会遇到序列化和反序列化的问题，比较常用的是将对象序列化成json信息存储。 对于json信息的操作，我个人偏向于使用FastJson，这是一款java环境的json处理工具，由阿里爸爸开发。 项目地址：https:&#x2F;&#x2F;github.com&#x2F;alibaba&#x2F;fastjson">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题">
+<meta property="og:url" content="https://chenzhihao.cc/2019/05/26/%E8%A7%A3%E5%86%B3%E4%BD%BF%E7%94%A8FastJson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%9B%E5%9E%8B%E7%B1%BB%E6%97%B6%EF%BC%8C%E5%86%85%E9%83%A8%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%9E%8B%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%AF%86%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Chen&#39;s Blog">
+<meta property="og:description" content="在开发中经常会遇到序列化和反序列化的问题，比较常用的是将对象序列化成json信息存储。 对于json信息的操作，我个人偏向于使用FastJson，这是一款java环境的json处理工具，由阿里爸爸开发。 项目地址：https:&#x2F;&#x2F;github.com&#x2F;alibaba&#x2F;fastjson">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-05-26T04:28:14.000Z">
+<meta property="article:modified_time" content="2024-04-28T08:11:41.507Z">
+<meta property="article:author" content="Chen">
+<meta property="article:tag" content="fastjson">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://chenzhihao.cc/2019/05/26/%E8%A7%A3%E5%86%B3%E4%BD%BF%E7%94%A8FastJson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%9B%E5%9E%8B%E7%B1%BB%E6%97%B6%EF%BC%8C%E5%86%85%E9%83%A8%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%9E%8B%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%AF%86%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://chenzhihao.cc/2019/05/26/%E8%A7%A3%E5%86%B3%E4%BD%BF%E7%94%A8FastJson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%9B%E5%9E%8B%E7%B1%BB%E6%97%B6%EF%BC%8C%E5%86%85%E9%83%A8%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%9E%8B%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%AF%86%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98/","path":"2019/05/26/解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题/","title":"解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题 | Chen's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chen's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">解决思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number"></span> <span class="nav-text">参考资料</span></a></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chen"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Chen</p>
+  <div class="site-description" itemprop="description">Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/haozishuizhaole" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;haozishuizhaole" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chenzhihao.cc/2019/05/26/%E8%A7%A3%E5%86%B3%E4%BD%BF%E7%94%A8FastJson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%9B%E5%9E%8B%E7%B1%BB%E6%97%B6%EF%BC%8C%E5%86%85%E9%83%A8%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%9E%8B%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%AF%86%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Chen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Blog">
+      <meta itemprop="description" content="Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题 | Chen's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-05-26 12:28:14" itemprop="dateCreated datePublished" datetime="2019-05-26T12:28:14+08:00">2019-05-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-28 16:11:41" itemprop="dateModified" datetime="2024-04-28T16:11:41+08:00">2024-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题" href="/2019/05/26/%E8%A7%A3%E5%86%B3%E4%BD%BF%E7%94%A8FastJson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%9B%E5%9E%8B%E7%B1%BB%E6%97%B6%EF%BC%8C%E5%86%85%E9%83%A8%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%9E%8B%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%AF%86%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::8a01a03e6db4b1bc1e8c636f6b7f4fed" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>在开发中经常会遇到序列化和反序列化的问题，比较常用的是将对象序列化成json信息存储。</p>
+<p>对于json信息的操作，我个人偏向于使用FastJson，这是一款java环境的json处理工具，由阿里爸爸开发。</p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson">https://github.com/alibaba/fastjson</a></p>
+<span id="more"></span>
+
+<p>在开发中经常会遇到序列化和反序列化的问题，比较常用的是将对象序列化成json信息存储。</p>
+<p>对于json信息的操作，我个人偏向于使用FastJson，这是一款java环境的json处理工具，由阿里爸爸开发。</p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson">https://github.com/alibaba/fastjson</a></p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>泛型类A中组合一泛型类对象，使用<code>FastJson的&lt;T&gt; T parseObject(String text, Class&lt;T&gt; clazz, @Nullable Feature... features)</code>方法对序列化后A对象的值进行反序列化时，无法正确识别类型擦除前嵌套类的真实类型，从而导致反序列化后的嵌套类类型为Object。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span> T t;</span><br><span class="line">    <span class="comment">// 省略get／set方法</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>搞一下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">A&lt;B&gt; a = <span class="keyword">new</span> <span class="title class_">A</span>();</span><br><span class="line"><span class="type">B</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">B</span>();</span><br><span class="line">a.setT(b);</span><br><span class="line">System.out.println(a.getT().getClass().getName()); <span class="comment">// B</span></span><br><span class="line"><span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> JSONObject.toJSONString(a); </span><br><span class="line">A&lt;B&gt; parsedA = JSONObject.&lt;A&lt;B&gt;&gt;parseObject(str,A.class);</span><br><span class="line">System.out.println(a.getT().getClass().getName()); <span class="comment">// java.lang.Object</span></span><br><span class="line"><span class="comment">//获取反序列化后A类中泛型类的属性值</span></span><br><span class="line"><span class="type">String</span> <span class="variable">value</span> <span class="operator">=</span> a.getT().getField(); <span class="comment">// throw ClassCastException: JSONObject cannot be cast to B</span></span><br></pre></td></tr></table></figure>
+<p>首先创建类A的对象，类型约束为B。创建类B的对象，与A绑定。输出类A对象中绑定类的名称。</p>
+<p>将类A对象序列化成json字符串，然后使用反序列化方法解析出原始对象。</p>
+<p>此时再次输出类A对象中绑定类的名称，奇怪的是为何类型绑定出现问题。</p>
+<p>与之同时调用该绑定类的某个获取属性值的方法，就会抛出类型转换异常。</p>
+<h2 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h2><p>首先看一下当前使用的反序列话方法的API。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">parseObject</span><span class="params">(String text, Class&lt;T&gt; clazz, Feature... features)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (T) parseObject(text, (Type) clazz, ParserConfig.getGlobalInstance(), DEFAULT_PARSER_FEATURE, features);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们的需求是将序列化后的字符串反序列化成保留原始类型的对象，然而这个API的第二个参数为一个Class类型，需要传入目标对象的原始class对象。</p>
+<p>这就会出现一个问题，泛型限定类表丢失，类型被擦除，根据java编译器的类型擦出原则，所有泛型类都会被擦除为Object类型，因为虚拟机不认泛型类。有的同学说了：怎么不可以啊，第二个参数我传Class<B>.class 不可以么？ 答案是不可以。别问为什么，Google去</p>
+<p>说到这可以看得出，这个API不支持泛型类反序列化。那么我们在看一下关于fastJSON给出的反序列化工具还有什么？难道这是阿里在开发fastJSON时忽略的东西么？针对这个问题，我又搜索了一下，发现了如下API</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">parseObject</span><span class="params">(String text, TypeReference&lt;T&gt; type, Feature... features)</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">parseObject</span><span class="params">(String input, Type clazz, Feature... features)</span>;</span><br></pre></td></tr></table></figure>
+<p>此API与我们使用的唯一不同的是，第二个参数使用了一个泛型类，<code>TypeReference&lt;T&gt;</code>，哇爽的一B，然而就在我点进去想看看这个类的API文档时，我去年买了个表！毛也没有。（后来我搜了一下项目仓库找到了，在参考资料处贴出）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TypeReference</span>&lt;T&gt; &#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Type type;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">protected</span> <span class="title function_">TypeReference</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">Type</span> <span class="variable">superClass</span> <span class="operator">=</span> getClass().getGenericSuperclass();</span><br><span class="line"> </span><br><span class="line">        type = ((ParameterizedType) superClass).getActualTypeArguments()[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> Type <span class="title function_">getType</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> type;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">Type</span> <span class="variable">LIST_STRING</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TypeReference</span>&lt;List&lt;String&gt;&gt;() &#123;&#125;.getType();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个类将构造方法设置为 <code>protected</code>，很明显希望我去搞个类做（继）你（承）小（你）弟（呀），哪有呢么容易说继承就继承，让我先了解清楚。这个类有个私有常量，也提供了获取方法，在构造方法中，意图很明显，希望拿到大哥类型限定列表中的类型值。那好吧，既然你这么想当大哥，那就给你个机会。</p>
+<blockquote>
+<p>旁白：“你真要做他小弟？”<br>我：“绝不，给他另找一个就得了”</p>
+</blockquote>
+<p>新的实现方式如下A<B> a &#x3D; new A();</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">B</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">B</span>();</span><br><span class="line">a.setT(b);</span><br><span class="line">System.out.println(a.getT().getClass().getName()); <span class="comment">// B</span></span><br><span class="line"><span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> JSONObject.toJSONString(a); </span><br><span class="line"><span class="comment">// 使用支持泛型反序列化的API</span></span><br><span class="line"><span class="type">Type</span> <span class="variable">type</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TypeReference</span>&lt;A&lt;B&gt;&gt;()&#123;&#125;.getType(); <span class="comment">// 构造TypeReference的匿名内部类对象，直接获取Type对象</span></span><br><span class="line">A&lt;B&gt; parsedA = JSON.parseObject(str, type); <span class="comment">//使用第二个参数为 Type对象的反序列化API</span></span><br><span class="line">System.out.println(a.getT().getClass().getName()); <span class="comment">// B</span></span><br><span class="line"><span class="comment">//获取反序列化后A类中泛型类的属性值</span></span><br><span class="line"><span class="type">String</span> <span class="variable">value</span> <span class="operator">=</span> a.getT().getField(); <span class="comment">// success</span></span><br></pre></td></tr></table></figure>
+<p>搞定！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>在序列化和反序列化过程中带有泛型类要特别注意类型擦出的问题，尽量使用支持泛型处理的序列化和反序列化API</li>
+<li>通过出现的问题来锻炼自己解决问题的能力，实在不行Google呗，千万别用百度！千万别用百度！千万别用百度！</li>
+<li>别随便做人小弟，都是出来混的，有事儿解决事儿，千万别委屈求全！滥用继承，只会让代码更臃肿</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson/wiki/TypeReference">TypeReference</a></li>
+<li>具体类型擦出，详见我的这篇文章：<a href="/2019/05/26/java%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%B7%A7%E8%A7%A3%E6%B3%9B%E5%9E%8B%E6%93%A6%E9%99%A4%E4%B8%8E%E5%A4%9A%E6%80%81%E4%B9%8B%E9%97%B4%E7%9A%84%E7%9F%9B%E7%9B%BE/">《java虚拟机巧解泛型擦除与多态之间的矛盾》</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.oschina.net/question/251451_150785">fastjson如何json数组串转换为Object数组时如何指定各个数据项的数据类型</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Chen
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://chenzhihao.cc/2019/05/26/%E8%A7%A3%E5%86%B3%E4%BD%BF%E7%94%A8FastJson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%B3%9B%E5%9E%8B%E7%B1%BB%E6%97%B6%EF%BC%8C%E5%86%85%E9%83%A8%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%9E%8B%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%AF%86%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98/" title="解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题">https://chenzhihao.cc/2019/05/26/解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/fastjson/" rel="tag"># fastjson</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/05/26/%E7%BB%BF%E4%BA%86%EF%BC%81%E5%92%8B%E7%BB%BF%E7%9A%84%EF%BC%9F/" rel="prev" title="绿了！咋绿的？">
+                  <i class="fa fa-angle-left"></i> 绿了！咋绿的？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/05/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%88%E4%B8%80%EF%BC%89%E7%BA%BF%E6%80%A7%E8%A1%A8/" rel="next" title="数据结构（一）线性表">
+                  数据结构（一）线性表 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="SOHUCS" sid="8a01a03e6db4b1bc1e8c636f6b7f4fed"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"forest","dark":"forest"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.min.js","integrity":"sha256-TtLOdUA8mstPoO6sGvHIGx2ceXrrX4KgIItO06XOn8A="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyvYJIVq9","appkey":"75e4ade7804f4dc17e257a70697930d2","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+
+</body>
+</html>

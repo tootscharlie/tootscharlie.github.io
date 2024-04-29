@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"chenzhihao.cc","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"width_expanded":320,"width_dual_column":240},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="java8最大的特性就是引入Lambda表达式，即函数式编程，可以将行为进行传递。总结就是：使用不可变值与函数，函数对不可变值进行处理，映射成另一个值。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK8之Lambda表达式与函数式接口简述">
+<meta property="og:url" content="https://chenzhihao.cc/2019/09/27/JDK8%E4%B9%8BLambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3/index.html">
+<meta property="og:site_name" content="Chen&#39;s Blog">
+<meta property="og:description" content="java8最大的特性就是引入Lambda表达式，即函数式编程，可以将行为进行传递。总结就是：使用不可变值与函数，函数对不可变值进行处理，映射成另一个值。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-09-27T09:17:55.000Z">
+<meta property="article:modified_time" content="2024-04-28T08:11:41.494Z">
+<meta property="article:author" content="Chen">
+<meta property="article:tag" content="JDK8">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://chenzhihao.cc/2019/09/27/JDK8%E4%B9%8BLambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://chenzhihao.cc/2019/09/27/JDK8%E4%B9%8BLambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3/","path":"2019/09/27/JDK8之Lambda表达式与函数式接口/","title":"JDK8之Lambda表达式与函数式接口简述"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>JDK8之Lambda表达式与函数式接口简述 | Chen's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chen's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">守得云开见月明</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">Lambda表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%95%B0%E9%87%8C%E5%95%B0%E5%97%A6"><span class="nav-number">1.1.</span> <span class="nav-text">啰里啰嗦</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Lambda%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.3.</span> <span class="nav-text">使用Lambda创建线程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.</span> <span class="nav-text">函数式接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.</span> <span class="nav-text">自定义函数式接口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FunctionInterface"><span class="nav-number">2.1.1.</span> <span class="nav-text">@FunctionInterface</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A7%E7%89%88%E6%9C%AC%E5%85%BC%E5%AE%B9"><span class="nav-number">2.1.2.</span> <span class="nav-text">旧版本兼容</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E8%87%AA%E5%B8%A6%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.2.</span> <span class="nav-text">Java自带函数式接口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD%E5%9E%8B%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.2.1.</span> <span class="nav-text">功能型函数式接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E5%9E%8B%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.2.2.</span> <span class="nav-text">生产型函数式接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E5%9E%8B%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.2.3.</span> <span class="nav-text">消费型函数式接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%AD%E8%A8%80%E5%9E%8B%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.2.4.</span> <span class="nav-text">断言型函数式接口</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Chen"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Chen</p>
+  <div class="site-description" itemprop="description">Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/haozishuizhaole" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;haozishuizhaole" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chenzhihao.cc/2019/09/27/JDK8%E4%B9%8BLambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Chen">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Blog">
+      <meta itemprop="description" content="Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="JDK8之Lambda表达式与函数式接口简述 | Chen's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JDK8之Lambda表达式与函数式接口简述
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-27 17:17:55" itemprop="dateCreated datePublished" datetime="2019-09-27T17:17:55+08:00">2019-09-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-28 16:11:41" itemprop="dateModified" datetime="2024-04-28T16:11:41+08:00">2024-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="JDK8之Lambda表达式与函数式接口简述" href="/2019/09/27/JDK8%E4%B9%8BLambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::08d767c870b8d31980620da7c31a30c5" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>java8最大的特性就是引入Lambda表达式，即函数式编程，可以将行为进行传递。总结就是：使用不可变值与函数，函数对不可变值进行处理，映射成另一个值。</p>
+<span id="more"></span>
+
+<h2 id="Lambda表达式"><a href="#Lambda表达式" class="headerlink" title="Lambda表达式"></a>Lambda表达式</h2><h3 id="啰里啰嗦"><a href="#啰里啰嗦" class="headerlink" title="啰里啰嗦"></a>啰里啰嗦</h3><p>Java中万事万物皆对象，在JDK8以前，方法只能传递基本数据类型或引用数据类型，然而方法是不可以作为参数传递的。在其他语言中（例如：JavaScript）都已支持Lambda表达式实现函数式编程。当然在JDK8以前版本中也可以使用<code>带有单一方法的匿名内部类</code>的方式“伪实现”函数式编程。</p>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="comment">/*args list*/</span>) -&gt; &#123;<span class="comment">/*function body*/</span>&#125;</span><br><span class="line"><span class="comment">// eg</span></span><br><span class="line">(age, name) -&gt; &#123;System.out.println(<span class="string">&quot;姓名:&quot;</span>+name+<span class="string">&quot;，年龄:&quot;</span>+age)&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用Lambda创建线程"><a href="#使用Lambda创建线程" class="headerlink" title="使用Lambda创建线程"></a>使用Lambda创建线程</h3><p>JDK8以前，使用匿名内部类方式创建线程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Thread</span> <span class="variable">thread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(<span class="keyword">new</span> <span class="title class_">Runnable</span>()&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">        System.out.println(<span class="string">&quot;hello world&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure>
+<p>使用Lambda表达式实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Thread</span> <span class="variable">thread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(()-&gt;&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;hello world&quot;</span>);</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 或</span></span><br><span class="line"><span class="type">Thread</span> <span class="variable">thread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(()-&gt;System.out.println(<span class="string">&quot;hello world&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><blockquote>
+<p>官方定义<br>函数式接口(Functional Interface)就是一个有且仅有一个抽象方法，但是可以有多个非抽象方法的接口。<br>函数式接口可以被隐式转换为 lambda 表达式。</p>
+</blockquote>
+<p>可以将函数式接口理解为对方法（函数）的约定，是对方法的抽象，包括参数列表的个数、类型和顺序，以及有无返回值和返回值的类型，符合条件的方法就可以使用用函数式接口引用类型变量接收</p>
+<h3 id="自定义函数式接口"><a href="#自定义函数式接口" class="headerlink" title="自定义函数式接口"></a>自定义函数式接口</h3><h4 id="FunctionInterface"><a href="#FunctionInterface" class="headerlink" title="@FunctionInterface"></a>@FunctionInterface</h4><p>JDK8新增<code>@FunctionInterface</code>注解，用于标注一个接口为函数式接口.<br>创建一个输入类型为<code>Integer</code>输出类型为<code>String</code>的函数式接口，用于将数字转换为字符串。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">CustomFunction</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">apply</span><span class="params">(Integer number)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="comment">// 数字转字符串。</span></span><br><span class="line">        <span class="comment">// ClassName::FunctionName 方法引用</span></span><br><span class="line">        <span class="type">CustomFunction</span> <span class="variable">function1</span> <span class="operator">=</span> String::valueOf;</span><br><span class="line">        <span class="comment">// 数字+1转字符串</span></span><br><span class="line">        <span class="type">CustomFunction</span> <span class="variable">function2</span> <span class="operator">=</span> number -&gt; &#123;<span class="keyword">return</span> String.valueOf(number+<span class="number">1</span>)&#125;;</span><br><span class="line"></span><br><span class="line">        System.out.println(toString(<span class="number">1</span>, function1)); <span class="comment">// 1</span></span><br><span class="line">        System.out.println(toString(<span class="number">1</span>, function2)); <span class="comment">// 2</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">toString</span><span class="params">(<span class="type">int</span> number, CustomFunction function)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> function.apply(number);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="旧版本兼容"><a href="#旧版本兼容" class="headerlink" title="旧版本兼容"></a>旧版本兼容</h4><p>仅有一个抽象方法的接口，也可以作为函数式接口使用。目的是兼容旧版本</p>
+<h3 id="Java自带函数式接口"><a href="#Java自带函数式接口" class="headerlink" title="Java自带函数式接口"></a>Java自带函数式接口</h3><table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">函数接口</th>
+<th align="center">抽象方法</th>
+<th align="center">功能</th>
+<th align="center">入参类型</th>
+<th align="center">返回类型</th>
+<th align="center">示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">功能型</td>
+<td align="center">Function&lt;T,R&gt;</td>
+<td align="center">R apply(T t)</td>
+<td align="center">输入T，输出R</td>
+<td align="center">T</td>
+<td align="center">R</td>
+<td align="center">获取学生（Student）的名字（name）</td>
+</tr>
+<tr>
+<td align="center">生产型</td>
+<td align="center">Supplier<T></td>
+<td align="center">T get()</td>
+<td align="center">生产对象</td>
+<td align="center">无</td>
+<td align="center">T</td>
+<td align="center">工厂方法</td>
+</tr>
+<tr>
+<td align="center">消费型</td>
+<td align="center">Consumer<T></td>
+<td align="center">void accept(T t)</td>
+<td align="center">消费对象</td>
+<td align="center">T</td>
+<td align="center">无</td>
+<td align="center">输出一个值</td>
+</tr>
+<tr>
+<td align="center">断言型</td>
+<td align="center">Predicate<T></td>
+<td align="center">Boolean test(T t)</td>
+<td align="center">断言真假</td>
+<td align="center">T</td>
+<td align="center">Boolean</td>
+<td align="center">该学生（Student）成绩为100分吗？</td>
+</tr>
+</tbody></table>
+<p>此处使用学生对象Amy为例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Student amy;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUp</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.amy = <span class="keyword">new</span> <span class="title class_">Student</span>(<span class="string">&quot;Amy&quot;</span>, <span class="number">18</span>, <span class="number">98.0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 静态内部类：学生</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="meta">@AllArgsConstructor</span></span><br><span class="line">    <span class="meta">@NoArgsConstructor</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Student</span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String name;</span><br><span class="line">        <span class="keyword">private</span> Double score;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// has more test~</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="功能型函数式接口"><a href="#功能型函数式接口" class="headerlink" title="功能型函数式接口"></a>功能型函数式接口</h4><blockquote>
+<p>表示输入一个参数，返回一个结果的函数<br>使用场景：接受一个值，<br>eg：获取学生对象（amy）的姓名（name）</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testFunction</span><span class="params">()</span> &#123;</span><br><span class="line">    Function&lt;Student, String&gt; getNameFun = Student::getName;</span><br><span class="line">    System.out.println(getNameFun.apply(amy));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="生产型函数式接口"><a href="#生产型函数式接口" class="headerlink" title="生产型函数式接口"></a>生产型函数式接口</h4><blockquote>
+<p>表示无入参，返回一个结果的函数</p>
+</blockquote>
+<p>eg：创建一个学生对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSupplier</span><span class="params">()</span> &#123;</span><br><span class="line">    Supplier&lt;Student&gt; newStudentFun = Student::<span class="keyword">new</span>;</span><br><span class="line">    <span class="type">Student</span> <span class="variable">student</span> <span class="operator">=</span> newStudentFun.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="消费型函数式接口"><a href="#消费型函数式接口" class="headerlink" title="消费型函数式接口"></a>消费型函数式接口</h4><blockquote>
+<p>表示一个接收单个输入参数且无返回结果的函数。该函数在一定程度上会对输入参数进行操作，故该操作会有副作用。</p>
+</blockquote>
+<p>eg：修改学生成绩除以2并打印学生信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testConsumer</span><span class="params">()</span> &#123;</span><br><span class="line">    Consumer&lt;Student&gt; updStudentNameFun = student -&gt; student.setScore(student.getScore() / <span class="number">2</span>);</span><br><span class="line">    Consumer&lt;Student&gt; printStudentFun = System.out::println;</span><br><span class="line">    updStudentNameFun.andThen(printStudentFun).accept(amy);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="断言型函数式接口"><a href="#断言型函数式接口" class="headerlink" title="断言型函数式接口"></a>断言型函数式接口</h4><blockquote>
+<p>表示一个接收单个参数，并返回Boolean类型结果的函数。该函数用于根据入参进行条件判断，并返回判断结果（true，false）<br>也可以通过<code>and</code>和<code>or</code>添加多个组合条件</p>
+</blockquote>
+<p>eg：判断学生成绩是否及格（大于60分）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testPredicate</span><span class="params">()</span> &#123;</span><br><span class="line">    Predicate&lt;Student&gt; isPassedExam = student -&gt; student.getScore() &gt; <span class="number">60</span>;</span><br><span class="line">    System.out.println(isPassedExam.test(amy));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Chen
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://chenzhihao.cc/2019/09/27/JDK8%E4%B9%8BLambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3/" title="JDK8之Lambda表达式与函数式接口简述">https://chenzhihao.cc/2019/09/27/JDK8之Lambda表达式与函数式接口/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/JDK8/" rel="tag"># JDK8</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/06/13/Springmvc%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E4%BC%98%E9%9B%85%E5%A4%84%E6%96%B9%E5%BC%8F/" rel="prev" title="Springmvc请求参数的优雅处方式">
+                  <i class="fa fa-angle-left"></i> Springmvc请求参数的优雅处方式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/11/28/Spring-%E7%99%BD%E8%AF%9D%E4%B8%80%E4%B8%8BIoC/" rel="next" title="Spring:白话一下IoC">
+                  Spring:白话一下IoC <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="SOHUCS" sid="08d767c870b8d31980620da7c31a30c5"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chen</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"forest","dark":"forest"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.min.js","integrity":"sha256-TtLOdUA8mstPoO6sGvHIGx2ceXrrX4KgIItO06XOn8A="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyvYJIVq9","appkey":"75e4ade7804f4dc17e257a70697930d2","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+
+</body>
+</html>
