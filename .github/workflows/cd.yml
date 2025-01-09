@@ -8,7 +8,7 @@ on:
 env:
   GIT_USER: haozishuizhaole
   GIT_EMAIL: admin@chenzhihao.cc
-  DEPLOY_REPO: sanonz/sanonz.github.io
+  DEPLOY_REPO: haozishuizhaole/haozishuizhaole.github.io
   DEPLOY_BRANCH: master
 
 jobs:
