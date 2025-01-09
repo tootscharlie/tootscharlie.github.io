@@ -1,0 +1,62 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  GIT_USER: haozishuizhaole
+  GIT_EMAIL: admin@chenzhihao.cc
+  DEPLOY_REPO: sanonz/sanonz.github.io
+  DEPLOY_BRANCH: master
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 设置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23 # 根据你的项目需求设置版本
+
+      # 安装 Hexo-CLI
+      - name: Install hexo-cli
+        run: npm install hexo-cli -g
+
+      # 安装 Hexo 依赖
+      - name: Install Dependencies
+        run: npm install
+
+      # 编译
+      - name: Make(Clean & Generate)
+        run: |
+            make
+            find public
+
+      - name: Checkout deploy repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.DEPLOY_REPO }}
+          ref: ${{ env.DEPLOY_BRANCH }}
+          path: .deploy_git
+
+      - name: Configuration environment
+        env:
+          HEXO_DEPLOY_PRI: ${{secrets.HEXO_DEPLOY_PRI}}
+        run: |
+          sudo timedatectl set-timezone "Asia/Shanghai"
+          mkdir -p ~/.ssh/
+          echo "$HEXO_DEPLOY_PRI" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global user.name $GIT_USER
+          git config --global user.email $GIT_EMAIL
+
+      - name: Deploy Blog
+        run: hexo d
