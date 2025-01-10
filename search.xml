@@ -577,27 +577,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Mybatis异常 Result Maps collection already contains value for 某某</title>
-    <url>/2019/05/26/Mybatis%E5%BC%82%E5%B8%B8-Result-Maps-collection-already-contains-value-for-%E6%9F%90%E6%9F%90/</url>
-    <content><![CDATA[<p>开发时最痛恨的是灯下黑的bug，bug就在眼皮子地下被自己的“自作聪明”忽略掉。就在刚刚，我花了近十分钟去解决一个Mybatis报的异常： Result Maps collection already contains value for #￥%。先解释一下该异常信息的意思：Result Maps集合已经存在于#￥%。总之通过异常信息可以确定的是 该文件中有相同的某某某，即有同名的东西存在于一个文件中。着手解决一下吧</p>
-<span id="more"></span>
-
-<p>开发时最痛恨的是灯下黑的bug，bug就在眼皮子地下被自己的“自作聪明”忽略掉。就在刚刚，我花了近十分钟去解决一个Mybatis报的异常： Result Maps collection already contains value for #￥%。先解释一下该异常信息的意思：Result Maps集合已经存在于#￥%。总之通过异常信息可以确定的是 该文件中有相同的某某某，即有同名的东西存在于一个文件中。着手解决一下吧</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">org.apache.ibatis.builder.BuilderException: Error parsing Mapper XML. Cause: java.lang.IllegalArgumentException: Result Maps collection already contains value <span class="keyword">for</span> cc.chenzhihao.projectName.mapper.custom.QuestionnaireAnswerMapperCustom.BaseResultMap</span><br></pre></td></tr></table></figure>
-
-<p>剖析了一遍Mapper文件后发现如下尴（sha）尬（bi）的代码</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span> &gt;</span></span><br><span class="line">    questionnaire_answer_id, question_id, questionnaire_id</span><br><span class="line"><span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span> &gt;</span></span><br><span class="line">    questionnaire_answer_id, question_id, questionnaire_id</span><br><span class="line"><span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>发现了同名代码，该知道如何处理了吧</p>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>mybatis</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Java内部类相关总结</title>
     <url>/2020/03/30/Java%E5%86%85%E9%83%A8%E7%B1%BB%E7%9B%B8%E5%85%B3%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<p>说起内部类这个词儿，感觉既熟悉又陌生。熟悉，是因为开发中经常会用到；陌生，是因为即使开发中经常用到，但对底层实现不是很了解。我在写这篇文章之前，对内部类的一些细节一直存在忙点，直至在面试中遇到内部类相关的问题才顿悟，是时候总结一下内部类相关的知识点了。</p>
@@ -722,6 +701,27 @@
       <tags>
         <tag>java</tag>
         <tag>内部类</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mybatis异常 Result Maps collection already contains value for 某某</title>
+    <url>/2019/05/26/Mybatis%E5%BC%82%E5%B8%B8-Result-Maps-collection-already-contains-value-for-%E6%9F%90%E6%9F%90/</url>
+    <content><![CDATA[<p>开发时最痛恨的是灯下黑的bug，bug就在眼皮子地下被自己的“自作聪明”忽略掉。就在刚刚，我花了近十分钟去解决一个Mybatis报的异常： Result Maps collection already contains value for #￥%。先解释一下该异常信息的意思：Result Maps集合已经存在于#￥%。总之通过异常信息可以确定的是 该文件中有相同的某某某，即有同名的东西存在于一个文件中。着手解决一下吧</p>
+<span id="more"></span>
+
+<p>开发时最痛恨的是灯下黑的bug，bug就在眼皮子地下被自己的“自作聪明”忽略掉。就在刚刚，我花了近十分钟去解决一个Mybatis报的异常： Result Maps collection already contains value for #￥%。先解释一下该异常信息的意思：Result Maps集合已经存在于#￥%。总之通过异常信息可以确定的是 该文件中有相同的某某某，即有同名的东西存在于一个文件中。着手解决一下吧</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">org.apache.ibatis.builder.BuilderException: Error parsing Mapper XML. Cause: java.lang.IllegalArgumentException: Result Maps collection already contains value <span class="keyword">for</span> cc.chenzhihao.projectName.mapper.custom.QuestionnaireAnswerMapperCustom.BaseResultMap</span><br></pre></td></tr></table></figure>
+
+<p>剖析了一遍Mapper文件后发现如下尴（sha）尬（bi）的代码</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span> &gt;</span></span><br><span class="line">    questionnaire_answer_id, question_id, questionnaire_id</span><br><span class="line"><span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span> &gt;</span></span><br><span class="line">    questionnaire_answer_id, question_id, questionnaire_id</span><br><span class="line"><span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>发现了同名代码，该知道如何处理了吧</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>mybatis</tag>
       </tags>
   </entry>
   <entry>
