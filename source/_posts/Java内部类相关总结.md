@@ -1,4 +1,5 @@
 ---
+published: false
 title: Java内部类相关总结
 date: 2020-03-30 11:08:51
 categories: 技术

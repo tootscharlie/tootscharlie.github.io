@@ -1,4 +1,5 @@
 ---
+published: false
 title: java虚拟机巧解泛型擦除与多态之间的矛盾
 date: 2019-05-26 11:12:09
 categories: 技术

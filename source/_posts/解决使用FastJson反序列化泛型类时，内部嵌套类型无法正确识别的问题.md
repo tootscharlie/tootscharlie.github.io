@@ -1,4 +1,5 @@
 ---
+published: false
 title: 解决使用FastJson反序列化泛型类时，内部嵌套类型无法正确识别的问题
 date: 2019-05-26 12:28:14
 categories: 技术

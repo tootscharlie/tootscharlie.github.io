@@ -362,7 +362,7 @@ theme_color:
 body_scrollbar:
   # Place the scrollbar over the content.
   overlay: false
-  # Present the scrollbar even if the content is not overflowing.
+  # Reserving space for the scrollbar gutter even if the content is not overflowing.
   stable: false
 
 codeblock:
@@ -542,8 +542,8 @@ mermaid:
   enable: true
   # Available themes: default | dark | forest | neutral
   theme:
-    light: forest
-    dark: forest
+    light: default
+    dark: dark
 
 # WaveDrom tag
 wavedrom:
@@ -634,6 +634,7 @@ quicklink:
 motion:
   enable: false
   async: false
+  duration: 200
   transition:
     # All available transition variants: https://theme-next.js.org/animate/
     menu_item: fadeInDown
@@ -869,9 +870,6 @@ algolia_search:
 # Dependencies: https://github.com/next-theme/hexo-generator-searchdb
 local_search:
   enable: true
-  # If auto, trigger search by changing input.
-  # If manual, trigger search by pressing enter key or search button.
-  trigger: auto
   # Show top n results per article, show all results by setting to -1
   top_n_per_article: 1
   # Unescape html strings to the readable one.

@@ -1,6 +1,8 @@
 ---
+published: false
 title: 解决Springboot使用Redis反序列化遇到的类型转换异常
 date: 2019-05-26 13:17:36
+updated: 2019-05-26 13:17:36
 categories: 技术
 tags: redis
 ---

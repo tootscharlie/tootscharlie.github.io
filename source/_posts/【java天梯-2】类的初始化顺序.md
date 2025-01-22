@@ -1,4 +1,5 @@
 ---
+published: false
 title: 【java天梯-2】类的初始化顺序
 date: 2019-05-26 12:46:44
 categories: 技术

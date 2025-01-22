@@ -1,4 +1,5 @@
 ---
+published: false
 title: JDK8之Lambda表达式与函数式接口简述
 date: 2019-09-27 17:17:55
 categories: 技术

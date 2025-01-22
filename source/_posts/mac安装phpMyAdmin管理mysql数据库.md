@@ -1,6 +1,8 @@
 ---
+published: true
 title: mac安装phpMyAdmin管理mysql数据库
 date: 2019-05-26 11:17:35
+updated: 2019-05-26 11:17:35
 categories: 技术
 tags: phpmyadmin
 ---
