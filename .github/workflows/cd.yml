@@ -37,7 +37,7 @@ jobs:
         run: |
           sed -i "s|{{ENV_GITALK_CLIENT_ID}}|${{ secrets.GITALK_CLIENT_ID }}|g" _config.next.yml
           sed -i "s|{{ENV_GITALK_CLIENT_SECRET}}|${{ secrets.GITALK_CLIENT_SECRET }}|g" _config.next.yml
-          grep gitalk _config.next.yml -A 15
+          cat _config.next.yml
       
       # 安装依赖
       - name: Install Dependencies
