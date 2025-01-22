@@ -6,7 +6,7 @@
 title: "Chen's Blog"
 subtitle: '守得云开见月明'
 description: 'Today is not easy<br/>Tomorrow is more difficult<br/>But the day after tomorrow<br/>will be wonderful!'
-keywords: '陈志昊,Java,chenzhihao,耗子睡着了'
+keywords: '陈志昊,Java,chenzhihao,突突的查理'
 author: 'Chen'
 language: 'zh-CN'
 timezone: ''
@@ -110,7 +110,7 @@ theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
-deploy:
-  - type: git
-    repo: git@github.com:haozishuizhaole/haozishuizhaole.github.io.git
-    branch: master
+# deploy:
+#   - type: 
+#     repo: 
+#     branch: 

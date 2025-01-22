@@ -2,12 +2,17 @@
   "name": "hexo-site",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "build": "hexo generate",
+    "clean": "hexo clean",
+    "deploy": "hexo deploy",
+    "server": "hexo server"
+  },
   "hexo": {
     "version": "7.3.0"
   },
   "dependencies": {
     "css": "^3.0.0",
-    "hexo": "v7.3.0",
     "hexo-browsersync": "^0.3.0",
     "hexo-deployer-git": "^4.0.0",
     "hexo-generator-archive": "^2.0.0",
