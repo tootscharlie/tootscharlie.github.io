@@ -6,9 +6,9 @@ on:
       - master
 
 env:
-  GIT_USER: haozishuizhaole
+  GIT_USER: tootscharlie
   GIT_EMAIL: admin@chenzhihao.cc
-  DEPLOY_REPO: haozishuizhaole/haozishuizhaole.github.io
+  DEPLOY_REPO: tootscharlie/tootscharlie.github.io
   DEPLOY_BRANCH: master
 
 jobs:
