@@ -9,14 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Environment Variables
+      - name: Debug Secrets
         run: |
+          set -x  # 打开调试模式
           echo "GITALK_CLIENT_ID=${{ secrets.GITALK_CLIENT_ID }}"
           echo "GITALK_CLIENT_SECRET=${{ secrets.GITALK_CLIENT_SECRET }}"
-        env:
-          GITALK_CLIENT_ID: ${{ secrets.GITALK_CLIENT_ID }}
-          GITALK_CLIENT_SECRET: ${{ secrets.GITALK_CLIENT_SECRET }}
-          
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
