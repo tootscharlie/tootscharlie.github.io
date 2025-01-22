@@ -5,6 +5,7 @@ on:
     branches:
       - master
 jobs:
+  # 构建流程
   build:
     runs-on: ubuntu-latest
     steps:
@@ -13,12 +14,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # If your repository depends on submodule, please see: https://github.com/actions/checkout
           submodules: recursive
+
+      # 安装Node
       - name: Use Node.js 
         uses: actions/setup-node@v4
         with:
           # Examples: 20, 18.19, >=16.20.2, lts/Iron, lts/Hydrogen, *, latest, current, node
           # Ref: https://github.com/actions/setup-node#supported-version-syntax
           node-version: "23"
+      
+      # 缓存依赖
       - name: Cache NPM dependencies
         uses: actions/cache@v4
         with:
@@ -26,14 +31,28 @@ jobs:
           key: ${{ runner.OS }}-npm-cache
           restore-keys: |
             ${{ runner.OS }}-npm-cache
+      
+      # 替换配置中的占位符为环境变量
+      - name: Replace Environment Secrets in Config
+        run: |
+          sed -i "s|{{ENV_GITALK_CLIENT_ID}}|${{ secrets.GITALK_CLIENT_ID }}|g" _config.next.yml
+          sed -i "s|{{ENV_GITALK_CLIENT_SECRET}}|${{ secrets.GITALK_CLIENT_SECRET }}|g" _config.next.yml
+      
+      # 安装依赖
       - name: Install Dependencies
         run: npm install
+      
+      # 编译
       - name: Build
         run: npm run build
+
+      # 上传产出物
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
+          
+  # 发布流程
   deploy:
     needs: build
     permissions:
