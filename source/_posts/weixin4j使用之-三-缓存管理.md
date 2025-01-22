@@ -1,6 +1,7 @@
 ---
+published: true
 title: weixin4j使用之(三) 缓存管理
-date: 2019-05-26 12:07:30
+date: 2018-05-26 12:07:30
 categories: 技术
 tags: 
     - 微信开发

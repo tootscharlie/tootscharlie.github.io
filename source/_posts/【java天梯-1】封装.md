@@ -1,4 +1,5 @@
 ---
+published: false
 title: 【java天梯-1】封装
 date: 2019-05-26 12:44:42
 categories: 技术

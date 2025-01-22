@@ -1,6 +1,8 @@
 ---
+published: true
 title: 升级mac系统后git丢失
 date: 2019-05-26 11:05:13
+updated: 2019-05-26 11:05:13
 categories: 技术
 tags:
     - mac

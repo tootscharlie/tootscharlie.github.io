@@ -1,4 +1,5 @@
 ---
+published: false
 title: 【Git爬坡】丢弃修改
 date: 2019-05-26 13:13:52
 categories: 技术

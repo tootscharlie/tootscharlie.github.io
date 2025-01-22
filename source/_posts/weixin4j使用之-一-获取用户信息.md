@@ -1,6 +1,7 @@
 ---
+published: true
 title: weixin4j使用之(一) 获取用户信息
-date: 2019-05-26 11:39:00
+date: 2018-05-26 11:39:00
 categories: 技术
 tags: 
     - 微信开发

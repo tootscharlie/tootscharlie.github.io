@@ -1,4 +1,5 @@
 ---
+published: false
 title: 'Spring:Bean的实例化配置及依赖注入'
 date: 2019-11-29 11:14:01
 categories: 技术

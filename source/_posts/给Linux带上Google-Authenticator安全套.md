@@ -1,6 +1,8 @@
 ---
+published: true
 title: 给Linux带上Google Authenticator安全套
 date: 2019-05-26 11:22:13
+updated: 2019-05-26 11:22:13
 categories: 技术
 tags: linux
 ---

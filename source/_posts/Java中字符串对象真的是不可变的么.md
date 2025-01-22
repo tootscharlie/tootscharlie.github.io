@@ -1,6 +1,8 @@
 ---
+published: true
 title: Java中字符串对象真的是不可变的么?
-date: 2020-04-01 10:35:13
+date: 2019-04-01 10:35:13
+updated: 2019-04-01 10:35:13
 categories: 技术
 tags:
     - java

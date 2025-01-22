@@ -1,4 +1,5 @@
 ---
+published: false
 title: 'Spring:简单摆弄一下SpringIoC容器'
 date: 2019-11-28 14:48:39
 categories: 技术

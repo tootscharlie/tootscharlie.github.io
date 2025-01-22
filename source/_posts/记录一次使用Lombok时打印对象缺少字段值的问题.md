@@ -1,6 +1,8 @@
 ---
+published: false
 title: 记录一次使用Lombok时打印对象缺少字段值的问题
 date: 2019-05-26 13:23:17
+updated: 2019-05-26 13:23:17
 categories: 技术
 tags: lombok
 ---
