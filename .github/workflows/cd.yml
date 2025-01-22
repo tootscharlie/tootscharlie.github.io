@@ -9,17 +9,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Secrets
-        run: |
-          set -x  # 打开调试模式
-          echo "GITALK_CLIENT_ID=${{ secrets.GITALK_CLIENT_ID }}"
-          echo "GITALK_CLIENT_SECRET=${{ secrets.GITALK_CLIENT_SECRET }}"
+      # 迁出代码到工作区
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # If your repository depends on submodule, please see: https://github.com/actions/checkout
           submodules: recursive
 
+      # 替换配置中的占位符为环境变量
+      - name: Replace Environment Secrets in Config
+        run: |
+          sed -i "s|{{ENV_GITALK_CLIENT_ID}}|${{ secrets.GITALK_CLIENT_ID }}|g" _config.next.yml
+          sed -i "s|{{ENV_GITALK_CLIENT_SECRET}}|${{ secrets.GITALK_CLIENT_SECRET }}|g" _config.next.yml
+      
       # 安装Node
       - name: Use Node.js 
         uses: actions/setup-node@v4
@@ -36,13 +38,6 @@ jobs:
           key: ${{ runner.OS }}-npm-cache
           restore-keys: |
             ${{ runner.OS }}-npm-cache
-      
-      # 替换配置中的占位符为环境变量
-      - name: Replace Environment Secrets in Config
-        run: |
-          sed -i "s|{{ENV_GITALK_CLIENT_ID}}|${{ secrets.GITALK_CLIENT_ID }}|g" _config.next.yml
-          sed -i "s|{{ENV_GITALK_CLIENT_SECRET}}|${{ secrets.GITALK_CLIENT_SECRET }}|g" _config.next.yml
-          cat _config.next.yml
       
       # 安装依赖
       - name: Install Dependencies
