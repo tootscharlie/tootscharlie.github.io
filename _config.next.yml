@@ -586,7 +586,7 @@ math:
 
 # Easily enable fast Ajax navigation on your website.
 # For more information: https://github.com/next-theme/pjax
-pjax: true
+pjax: false
 
 # FancyBox is a tool that offers a nice and elegant way to add zooming functionality for images.
 # For more information: https://fancyapps.com/fancybox/
@@ -726,12 +726,12 @@ livere_uid: # <your_uid>
 # For more information: https://gitalk.github.io
 gitalk:
   enable: true
-  github_id: tootscharlie # GitHub repo owner
-  repo: tootscharlie.github.io # Repository name to store issues
-  client_id: {{ENV_GITALK_CLIENT_ID}} # GitHub Application Client ID
-  client_secret: {{ENV_GITALK_CLIENT_SECRET}} # GitHub Application Client Secret
-  admin_user: tootscharlie # GitHub repo owner and collaborators, only these guys can initialize gitHub issues
-  distraction_free_mode: true # Facebook-like distraction free mode
+  github_id: "tootscharlie" # GitHub repo owner
+  repo: "tootscharlie.github.io" # Repository name to store issues
+  client_id: "{{ENV_GITALK_CLIENT_ID}}" # GitHub Application Client ID
+  client_secret: "{{ENV_GITALK_CLIENT_SECRET}}" # GitHub Application Client Secret
+  admin_user: "tootscharlie" # GitHub repo owner and collaborators, only these guys can initialize gitHub issues
+  distraction_free_mode: false # Facebook-like distraction free mode
   # When the official proxy is not available, you can change it to your own proxy address
   # proxy: https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token # This is official proxy address
   # Gitalk's display language depends on user's browser or system environment
@@ -925,6 +925,7 @@ vendors:
   # custom_cdn_url: https://cdn.jsdelivr.net/npm/${npm_name}@${version}/${minified}
   # custom_cdn_url: https://cdnjs.cloudflare.com/ajax/libs/${cdnjs_name}/${version}/${cdnjs_file}
   custom_cdn_url:
+#  pjax: https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js
 
 # Assets
 # Accelerate delivery of static files using a CDN
