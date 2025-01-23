@@ -739,8 +739,28 @@ gitalk:
   # Available values: en | es-ES | fr | ru | zh-CN | zh-TW
   language: zh-CN
   body: |
-    **文章标题**: [${document.title}](${location.href})
-    **自定义内容**: 这是我在 Gitalk 中自定义的 Issue body，欢迎评论交流！
+    嘿！👋
+    </br>
+    感谢你抽空来看这篇文章，也特别期待你阅读后留下评论～
+    </br>
+    以下是一些关于文章的小信息，你可以参考一下：
+    </br>
+    ### 📄 文章信息
+    - **文章标题**: ${document.title}
+    - **文章链接**: [点击查看](${location.href})
+    </br>
+    ---
+    </br>
+    ### ✨ 你的评论
+    直接在这里写下你的想法吧！
+    不管是吐槽、建议还是灵光一现的点子，我们都超欢迎！👇
+    </br>
+    ---
+    </br>
+    > 小提示：
+    > - 如果有啥问题或者建议，尽管告诉我，绝对不会介意
+    </br>
+    💖 谢谢你的评论，我们会认真阅读并回复！
 
 # Utterances
 # For more information: https://utteranc.es
