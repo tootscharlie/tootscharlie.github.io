@@ -739,8 +739,8 @@ gitalk:
   # Available values: en | es-ES | fr | ru | zh-CN | zh-TW
   language: zh-CN
   body: |
-    `**文章标题**: [${document.title}](${location.href})
-    **自定义内容**: 这是我在 Gitalk 中自定义的 Issue body，欢迎评论交流！`
+    **文章标题**: [${document.title}](${location.href})
+    **自定义内容**: 这是我在 Gitalk 中自定义的 Issue body，欢迎评论交流！
 
 # Utterances
 # For more information: https://utteranc.es
