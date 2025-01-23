@@ -726,11 +726,11 @@ livere_uid: # <your_uid>
 # For more information: https://gitalk.github.io
 gitalk:
   enable: true
-  github_id: tootscharlie # GitHub repo owner
-  repo: tootscharlie.github.io # Repository name to store issues
-  client_id: {{ENV_GITALK_CLIENT_ID}} # GitHub Application Client ID
-  client_secret: {{ENV_GITALK_CLIENT_SECRET}} # GitHub Application Client Secret
-  admin_user: tootscharlie # GitHub repo owner and collaborators, only these guys can initialize gitHub issues
+  github_id: "tootscharlie" # GitHub repo owner
+  repo: "tootscharlie.github.io" # Repository name to store issues
+  client_id: "{{ENV_GITALK_CLIENT_ID}}" # GitHub Application Client ID
+  client_secret: "{{ENV_GITALK_CLIENT_SECRET}}" # GitHub Application Client Secret
+  admin_user: "tootscharlie" # GitHub repo owner and collaborators, only these guys can initialize gitHub issues
   distraction_free_mode: false # Facebook-like distraction free mode
   # When the official proxy is not available, you can change it to your own proxy address
   # proxy: https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token # This is official proxy address
@@ -739,9 +739,8 @@ gitalk:
   # Available values: en | es-ES | fr | ru | zh-CN | zh-TW
   language: zh-CN
   body: |
-    **文章标题**: [${document.title}](${location.href})<br/>
-    **自定义内容**: 这是我在 Gitalk 中自定义的 Issue body，欢迎评论交流！<br/>
-    
+    **文章标题**: [${document.title}](${location.href})
+    **自定义内容**: 这是我在 Gitalk 中自定义的 Issue body，欢迎评论交流！
 
 # Utterances
 # For more information: https://utteranc.es
@@ -929,6 +928,7 @@ vendors:
   # custom_cdn_url: https://cdn.jsdelivr.net/npm/${npm_name}@${version}/${minified}
   # custom_cdn_url: https://cdnjs.cloudflare.com/ajax/libs/${cdnjs_name}/${version}/${cdnjs_file}
   custom_cdn_url:
+#  pjax: https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js
 
 # Assets
 # Accelerate delivery of static files using a CDN
