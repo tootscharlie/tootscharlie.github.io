@@ -738,9 +738,9 @@ gitalk:
   # If you want everyone visiting your site to see a uniform language, you can set a force language value
   # Available values: en | es-ES | fr | ru | zh-CN | zh-TW
   language: zh-CN
-  body: "
+  body: |
     嘿！👋
-  
+    
     感谢你抽空来看这篇文章，也特别期待你阅读后留下评论～
       
     ### 📄 文章信息
@@ -758,7 +758,6 @@ gitalk:
     > 小提示：如果有啥问题或者建议，尽管告诉我，绝对不会介意
         
     💖 谢谢你的评论，我会认真阅读并回复！
-    "
 
 # Utterances
 # For more information: https://utteranc.es
