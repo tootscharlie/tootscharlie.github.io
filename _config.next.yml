@@ -803,7 +803,7 @@ google_analytics:
 
 # Baidu Analytics
 # See: https://tongji.baidu.com
-baidu_analytics: # <app_id>
+baidu_analytics: "848a921082820f14316e72f99072c2db"
 
 # Growingio Analytics
 # See: https://www.growingio.com
