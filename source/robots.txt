@@ -12,5 +12,5 @@ Disallow: /fonts/
 Disallow: /vendors/
 Disallow: /fancybox/
 
-Sitemap: https://chenzhihao.cc/sitemap.xml
-Sitemap: https://chenzhihao.cc/baidusitemap.xml
+Sitemap: https://chenzhihao.com/sitemap.xml
+Sitemap: https://chenzhihao.com/baidusitemap.xml

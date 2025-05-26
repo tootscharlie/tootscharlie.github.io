@@ -54,13 +54,13 @@ chenzhihao-mac:gitlearning chenzhihao$ git commit -m "update readme.md add very"
 ```bash
 chenzhihao-mac:gitlearning chenzhihao$ git log
 commit b98de68ec923f7521535a9b36ffc1f62e6c38a77 (HEAD -> master)
-Author: Chen <admin@chenzhihao.cc>
+Author: Chen <admin@chenzhihao.com>
 Date: Mon Dec 11 16:12:03 2017 +0800
  
 update readme.md add very
  
 commit 3a2897a6fcd90a32249d706a04d67b3f8c7cff45
-Author: Chen <admin@chenzhihao.cc>
+Author: Chen <admin@chenzhihao.com>
 Date: Mon Dec 11 08:26:30 2017 +0800
  
 create file readme.md
@@ -71,7 +71,7 @@ chenzhihao-mac:gitlearning chenzhihao$ git reset --hard 3a2897a6fcd90a32249d706a
 HEAD is now at 3a2897a create file readme.md
 chenzhihao-mac:gitlearning chenzhihao$ git log
 commit 3a2897a6fcd90a32249d706a04d67b3f8c7cff45 (HEAD -> master)
-Author: Chen <admin@chenzhihao.cc>
+Author: Chen <admin@chenzhihao.com>
 Date: Mon Dec 11 08:26:30 2017 +0800
  
 create file readme.md
@@ -86,7 +86,7 @@ Git is a very important Code Management System!
 HEAD is now at 3a2897a create file readme.md
 chenzhihao-mac:gitlearning chenzhihao$ git log
 commit 3a2897a6fcd90a32249d706a04d67b3f8c7cff45 (HEAD -> master)
-Author: Chen <admin@chenzhihao.cc>
+Author: Chen <admin@chenzhihao.com>
 Date: Mon Dec 11 08:26:30 2017 +0800
  
 create file readme.md
