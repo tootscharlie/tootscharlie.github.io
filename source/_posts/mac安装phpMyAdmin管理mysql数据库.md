@@ -9,6 +9,8 @@ tags: phpmyadmin
 
 在macbook系统上安装phpMyadmin工具管理mysql数据库。
 
+<!-- more -->
+
 ## 环境
 
 - macOS 10.12.1 （mysql5.7官方说支持到10.11，其实这个版本也可以安装）
